@@ -1,0 +1,49 @@
+#pragma once
+
+#include "GLEW/glew.h"
+#include "SDL2/SDL.h"
+#include "glm/glm.hpp"
+#include <glm/gtc/type_ptr.hpp>
+
+#include <iostream>
+#include <vector>
+#include <string>
+
+class GLProgram
+{
+public:
+	GLProgram(std::vector<std::string> shaders);
+	~GLProgram();
+	GLuint id();
+	void use();
+
+	template <typename T>
+	inline void setUniform(const GLchar* uniformName, T uniformValue)
+	{
+		use();
+		GLint uniformLocation = glGetUniformLocation(program, uniformName);
+		std::string typeName = typeid(T).name();
+
+		if (typeName == "float")
+			glProgramUniform1f(program, uniformLocation, static_cast <GLfloat> (uniformValue));
+		else if (typeName == "double")
+			glProgramUniform1d(program, uniformLocation, static_cast <GLdouble> (uniformValue));
+		else if (typeName == "unsigned int")
+			glProgramUniform1ui(program, uniformLocation, static_cast <GLuint> (uniformValue));
+		else if (typeName == "int")
+			glProgramUniform1i(program, uniformLocation, static_cast <GLint> (uniformValue));
+
+	}
+	inline void setUniform(const GLchar *uniformName, glm::mat4 uniformValue)
+	{
+		use();
+		GLint uniformLocation = glGetUniformLocation(program, uniformName);
+		glProgramUniformMatrix4fv(program, uniformLocation, 1, GL_FALSE, glm::value_ptr(uniformValue));
+	}
+
+
+private:
+	GLuint program;
+
+	void prepareShader(GLuint *shader, GLuint shaderType, std::string path);
+};
