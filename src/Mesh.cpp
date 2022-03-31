@@ -20,7 +20,7 @@ Mesh::Mesh(tinygltf::Mesh *mesh, tinygltf::Model *loadedModel)
 	float *positionsPtr	 = (float *) getDataPtr(&numPositionBytes	, positionsAccessorId	, loadedModel);
 	float *normalsPtr	 = (float *) getDataPtr(&numNormalBytes		, normalsAccessorId		, loadedModel);
 	float *texCoords0Ptr = (float *) getDataPtr(&numTexCoords0Bytes	, texCoords0AccessorId	, loadedModel);
-	unsigned short *indicesPtr = (unsigned short *)	 getDataPtr(&numIndicesBytes	, indicesAccessorId		, loadedModel);
+	unsigned short *indicesPtr = (unsigned short *)	getDataPtr(&numIndicesBytes, indicesAccessorId, loadedModel);
 
 	for (size_t i = 0; i < numVertices; i++)
 	{
@@ -42,6 +42,7 @@ Mesh::Mesh(tinygltf::Mesh *mesh, tinygltf::Model *loadedModel)
 		indices.push_back(index);
 	}
 
+	loadMaterial(mesh, loadedModel);
 	initOpenGLBuffers();
 }
 
@@ -91,6 +92,19 @@ void * Mesh::copyBufferData(int accessorId, tinygltf::Model *loadedModel)
 	return dataPtr;
 }
 
+void Mesh::loadMaterial(tinygltf::Mesh* mesh, tinygltf::Model* loadedModel)
+{
+	tinygltf::Material* m = &loadedModel->materials[mesh->primitives[0].material];
+
+	int colorTextureId = m->pbrMetallicRoughness.baseColorTexture.index;
+	int colorTextureImageId = loadedModel->textures[colorTextureId].source;
+	material.colorTexture = loadedModel->images[colorTextureImageId].name;
+
+	int normalTextureId = m->normalTexture.index;
+	int normalTextureImageId = loadedModel->textures[normalTextureId].source;
+	material.normalTexture = loadedModel->images[normalTextureImageId].name;
+}
+
 void Mesh::initOpenGLBuffers()
 {
 	// VBO
@@ -130,10 +144,15 @@ void Mesh::render()
 {
 	Renderer *renderer = Renderer::getInstance();
 
-	GLProgram *program = renderer->useProgram(Renderer::MESH);
+	GLProgram *program = renderer->useProgram(Renderer::Program::MESH);
 	program->setUniform("uModelMatrix", glm::mat4(1.0f));
 	program->setUniform("uViewMatrix", renderer->getCamera()->getViewMatrix());
 	program->setUniform("uProjectionMatrix", renderer->getCamera()->getProjectionMatrix());
+
+	renderer->bindTexture(material.colorTexture, 0);
+	renderer->bindTexture(material.normalTexture, 1);
+	program->setUniform("colorTexture", 0);
+	program->setUniform("normalTexture", 1);
 
 	glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, 0);

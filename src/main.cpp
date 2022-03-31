@@ -54,14 +54,14 @@ void initialize()
     glEnable(GL_DEPTH_TEST);
 
     // Camera
-    camera = new Camera(glm::vec3(0.0f, 200.0f, 230.0f), 45, (float) screenWidth / (float) screenHeight, 0.1f, 1000.0f);
+    camera = new Camera(glm::vec3(0.0f, 2.0f, 3.0f), 45, (float) screenWidth / (float) screenHeight, 0.1f, 1000.0f);
     camera->rotateCamera(900.0f, -270.0f);	// reset rotation
 
     // Renderer singleton
     Renderer *renderer = Renderer::getInstance();
     renderer->setCamera(camera);
 
-    model = new Model(MODEL_ALEX);
+    model = new Model(MODEL_MAW);
 }
 
 void run()
@@ -82,7 +82,7 @@ void cleanup()
 
 void processInput()
 {
-    float speed = 5.0f;
+    float speed = 0.1f;
 
     while (SDL_PollEvent(&event) > 0)
     {
@@ -131,28 +131,43 @@ void processInput()
                     case SDL_BUTTON_LEFT:
                         break;
                     case SDL_BUTTON_RIGHT:
+                        mouseRightButtonDown = true;
+                        mouseLastX = event.button.x;
+                        mouseLastY = event.button.y;
                         break;
                 }
-            break;
-            case SDL_MOUSEMOTION:
-                float xpos = static_cast<float>(event.motion.x);
-                float ypos = static_cast<float>(event.motion.y);
-
-                if (firstMouse)
+                break;
+            case SDL_MOUSEBUTTONUP:
+                switch (event.button.button)
                 {
-                    lastX = xpos;
-                    lastY = ypos;
-                    firstMouse = false;
+                    case SDL_BUTTON_LEFT:
+                        break;
+                    case SDL_BUTTON_RIGHT:
+                        mouseRightButtonDown = false;
+                        break;
                 }
+                break;
+            case SDL_MOUSEMOTION:
+                if (mouseRightButtonDown)
+                {
+                    float xpos = static_cast<float>(event.motion.x);
+                    float ypos = static_cast<float>(event.motion.y);
 
-                float xoffset = xpos - lastX;
-                float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+                    if (firstMouse)
+                    {
+                        mouseLastX = xpos;
+                        mouseLastY = ypos;
+                        firstMouse = false;
+                    }
 
-                lastX = xpos;
-                lastY = ypos;
+                    float xoffset = xpos - mouseLastX;
+                    float yoffset = mouseLastY - ypos; // reversed since y-coordinates go from bottom to top
 
-                camera->rotateCamera(-xoffset, yoffset);
+                    mouseLastX = xpos;
+                    mouseLastY = ypos;
 
+                    camera->rotateCamera(-xoffset, yoffset);
+                }
                 break;
         }
     }

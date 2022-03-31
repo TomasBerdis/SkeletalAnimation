@@ -1,8 +1,13 @@
 #version 450 core
 
+in vec2 vTexCoords;
+
+uniform sampler2D colorTexture;
+uniform sampler2D normalTexture;
+
 out vec4 color;
 
 void main()
 {
-    color = vec4(1.0f, 1.0f, 0.0f, 0.0f);
+    color = texture(colorTexture, vTexCoords);
 }

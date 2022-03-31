@@ -15,6 +15,7 @@ public:
 	void render();
 
 private:
+	void loadTextures();
 	void processNode(tinygltf::Node *node);
 
 	tinygltf::Model loadedModel;

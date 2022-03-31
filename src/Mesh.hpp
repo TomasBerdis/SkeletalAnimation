@@ -18,6 +18,12 @@ struct Vertex
 	glm::vec2	texCoords;
 };
 
+struct Material
+{
+	std::string colorTexture = "";
+	std::string normalTexture = "";
+};
+
 class Mesh
 {
 public:
@@ -29,10 +35,12 @@ public:
 private:
 	std::vector<Vertex> vertices;
 	std::vector<unsigned short> indices;
+	Material material;
 
 	GLuint vao, vbo, ebo;
 
 	void *getDataPtr(int *bytes, int accessorId, tinygltf::Model *loadedModel);
 	void *copyBufferData(int accessorId, tinygltf::Model *loadedModel);
+	void loadMaterial(tinygltf::Mesh* mesh, tinygltf::Model* loadedModel);
 	void initOpenGLBuffers();
 };

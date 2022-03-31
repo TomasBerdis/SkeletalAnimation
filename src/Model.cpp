@@ -22,6 +22,7 @@ Model::Model(std::string path)
 	if (!ret) {
 		printf("Failed to parse glTF\n");
 	}
+	loadTextures();
 
 	int startingNodeId = loadedModel.scenes[loadedModel.defaultScene].nodes[0];
 	processNode(&loadedModel.nodes[startingNodeId]);
@@ -29,6 +30,15 @@ Model::Model(std::string path)
 
 Model::~Model()
 {
+}
+
+void Model::loadTextures()
+{
+	Renderer* renderer = Renderer::getInstance();
+	for (size_t i = 0; i < loadedModel.images.size(); i++)
+	{
+		renderer->loadTexture(&loadedModel.images[i]);
+	}
 }
 
 void Model::processNode(tinygltf::Node *node)

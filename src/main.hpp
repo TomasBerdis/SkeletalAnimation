@@ -26,6 +26,7 @@ SDL_Window *window;
 Camera *camera;
 Model *model;
 
-float lastX = screenWidth / 2.0f;
-float lastY = screenHeight / 2.0f;
+float mouseLastX = screenWidth / 2.0f;
+float mouseLastY = screenHeight / 2.0f;
 bool firstMouse = true;
+bool mouseRightButtonDown = false;
