@@ -142,12 +142,15 @@ void Mesh::initOpenGLBuffers()
 
 void Mesh::render()
 {
-	Renderer *renderer = Renderer::getInstance();
+	Renderer* renderer = Renderer::getInstance();
 
-	GLProgram *program = renderer->useProgram(Renderer::Program::MESH);
+	GLProgram* program = renderer->useProgram(Renderer::Program::MESH);
 	program->setUniform("uModelMatrix", glm::mat4(1.0f));
 	program->setUniform("uViewMatrix", renderer->getCamera()->getViewMatrix());
 	program->setUniform("uProjectionMatrix", renderer->getCamera()->getProjectionMatrix());
+	program->setUniform("uCameraPos", renderer->getCamera()->getPosition());
+	program->setUniform("uLightPos", glm::vec3{ 0.0f, 2.0f, 1.0f });
+	program->setUniform("uLightColor", glm::vec3{ 1.0f, 1.0f, 1.0f });
 
 	renderer->bindTexture(material.colorTexture, 0);
 	renderer->bindTexture(material.normalTexture, 1);

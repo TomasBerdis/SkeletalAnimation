@@ -10,17 +10,20 @@ class Model
 {
 public:
 	Model(std::string path);
+	Model() {};
 	~Model();
 
-	void render();
+	void virtual render();
 
-private:
+protected:
+	void loadFile(std::string path);
 	void loadTextures();
-	void processNode(tinygltf::Node *node);
 
 	tinygltf::Model loadedModel;
 	tinygltf::TinyGLTF loader;
-	std::string err;
-	std::string warn;
-	std::vector<Mesh *> meshes;
+
+private:
+	std::vector<Mesh*> meshes;
+
+	void processNode(tinygltf::Node* node);
 };

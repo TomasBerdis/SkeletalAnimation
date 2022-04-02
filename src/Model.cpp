@@ -2,7 +2,22 @@
 
 Model::Model(std::string path)
 {
+	loadFile(path);
+	loadTextures();
+
+	int startingNodeId = loadedModel.scenes[loadedModel.defaultScene].nodes[0];
+	processNode(&loadedModel.nodes[startingNodeId]);
+}
+
+Model::~Model()
+{
+}
+
+void Model::loadFile(std::string path)
+{
 	bool ret = false;
+	std::string err;
+	std::string warn;
 
 	if (path.ends_with(".gltf"))
 		ret = loader.LoadASCIIFromFile(&loadedModel, &err, &warn, path);
@@ -22,14 +37,6 @@ Model::Model(std::string path)
 	if (!ret) {
 		printf("Failed to parse glTF\n");
 	}
-	loadTextures();
-
-	int startingNodeId = loadedModel.scenes[loadedModel.defaultScene].nodes[0];
-	processNode(&loadedModel.nodes[startingNodeId]);
-}
-
-Model::~Model()
-{
 }
 
 void Model::loadTextures()

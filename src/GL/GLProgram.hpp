@@ -17,6 +17,7 @@ public:
 	GLuint id();
 	void use();
 
+
 	template <typename T>
 	inline void setUniform(const GLchar* uniformName, T uniformValue)
 	{
@@ -32,14 +33,16 @@ public:
 			glProgramUniform1ui(program, uniformLocation, static_cast <GLuint> (uniformValue));
 		else if (typeName == "int")
 			glProgramUniform1i(program, uniformLocation, static_cast <GLint> (uniformValue));
-
 	}
-	inline void setUniform(const GLchar *uniformName, glm::mat4 uniformValue)
-	{
-		use();
-		GLint uniformLocation = glGetUniformLocation(program, uniformName);
-		glProgramUniformMatrix4fv(program, uniformLocation, 1, GL_FALSE, glm::value_ptr(uniformValue));
-	}
+	template<typename T>
+	void setUniformv(const GLchar* uniformName, T uniformValue);
+	void setUniform(const GLchar* uniformName, glm::mat4 uniformValue);
+	void setUniform(const GLchar* uniformName, glm::vec2 uniformValue);
+	void setUniform(const GLchar* uniformName, glm::vec3 uniformValue);
+	void setUniform(const GLchar* uniformName, glm::vec4 uniformValue);
+	void setUniform(const GLchar* uniformName, glm::ivec2 uniformValue);
+	void setUniform(const GLchar* uniformName, glm::ivec3 uniformValue);
+	void setUniform(const GLchar* uniformName, glm::ivec4 uniformValue);
 
 
 private:

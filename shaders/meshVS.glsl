@@ -8,10 +8,14 @@ uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
 
+out vec3 vNormal;
 out vec2 vTexCoords;
+out vec3 vFragPos;
 
 void main()
 {
     vTexCoords = texCoords;
+    vNormal = normal;
+    vFragPos = vec3(uModelMatrix * vec4(position, 1.0f));
     gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * vec4(position, 1.0f);
 }

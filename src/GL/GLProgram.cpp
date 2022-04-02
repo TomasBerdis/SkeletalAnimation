@@ -83,3 +83,70 @@ void GLProgram::prepareShader(GLuint *shader, GLuint shaderType, std::string pat
 
 	*shader = createdShader;
 }
+
+template <typename T>
+void GLProgram::setUniformv(const GLchar* uniformName, T uniformValue)
+{
+	use();
+	GLint uniformLocation = glGetUniformLocation(program, uniformName);
+	std::string typeName = typeid(T).name();
+	glProgramUniform1uiv(program, uniformLocation, (GLsizei)sizeof(uniformValue) / sizeof(uniformValue[0]), uniformValue);
+
+	if (typeName == "float * __ptr64")
+		glProgramUniform1fv(program, uniformLocation, (GLsizei)sizeof(uniformValue) / sizeof(uniformValue[0]), reinterpret_cast <GLfloat*> (uniformValue));
+	else if (typeName == "double * __ptr64")
+		glProgramUniform1dv(program, uniformLocation, (GLsizei)sizeof(uniformValue) / sizeof(uniformValue[0]), reinterpret_cast <GLdouble*> (uniformValue));
+	else if (typeName == "unsigned int * __ptr64")
+		glProgramUniform1uiv(program, uniformLocation, (GLsizei)sizeof(uniformValue) / sizeof(uniformValue[0]), reinterpret_cast <GLuint*> (uniformValue));
+	else if (typeName == "int * __ptr64")
+		glProgramUniform1iv(program, uniformLocation, (GLsizei)sizeof(uniformValue) / sizeof(uniformValue[0]), reinterpret_cast <GLint*> (uniformValue));
+}
+
+void GLProgram::setUniform(const GLchar* uniformName, glm::mat4 uniformValue)
+{
+	use();
+	GLint uniformLocation = glGetUniformLocation(program, uniformName);
+	glProgramUniformMatrix4fv(program, uniformLocation, 1, GL_FALSE, glm::value_ptr(uniformValue));
+}
+
+void GLProgram::setUniform(const GLchar* uniformName, glm::vec2 uniformValue)
+{
+	use();
+	GLint uniformLocation = glGetUniformLocation(program, uniformName);
+	glProgramUniform2f(program, uniformLocation, uniformValue.x, uniformValue.y);
+}
+
+void GLProgram::setUniform(const GLchar* uniformName, glm::vec3 uniformValue)
+{
+	use();
+	GLint uniformLocation = glGetUniformLocation(program, uniformName);
+	glProgramUniform3f(program, uniformLocation, uniformValue.x, uniformValue.y, uniformValue.z);
+}
+
+void GLProgram::setUniform(const GLchar* uniformName, glm::vec4 uniformValue)
+{
+	use();
+	GLint uniformLocation = glGetUniformLocation(program, uniformName);
+	glProgramUniform4f(program, uniformLocation, uniformValue.x, uniformValue.y, uniformValue.z, uniformValue.w);
+}
+
+void GLProgram::setUniform(const GLchar* uniformName, glm::ivec2 uniformValue)
+{
+	use();
+	GLint uniformLocation = glGetUniformLocation(program, uniformName);
+	glProgramUniform2i(program, uniformLocation, uniformValue.x, uniformValue.y);
+}
+
+void GLProgram::setUniform(const GLchar* uniformName, glm::ivec3 uniformValue)
+{
+	use();
+	GLint uniformLocation = glGetUniformLocation(program, uniformName);
+	glProgramUniform3i(program, uniformLocation, uniformValue.x, uniformValue.y, uniformValue.z);
+}
+
+void GLProgram::setUniform(const GLchar* uniformName, glm::ivec4 uniformValue)
+{
+	use();
+	GLint uniformLocation = glGetUniformLocation(program, uniformName);
+	glProgramUniform4i(program, uniformLocation, uniformValue.x, uniformValue.y, uniformValue.z, uniformValue.w);
+}

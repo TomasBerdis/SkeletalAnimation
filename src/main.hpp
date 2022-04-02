@@ -8,6 +8,7 @@
 #include "GL/GLProgram.hpp"
 #include "Camera.hpp"
 #include "Model.hpp"
+#include "SkinnedModel.hpp"
 
 void initialize();
 void run();
