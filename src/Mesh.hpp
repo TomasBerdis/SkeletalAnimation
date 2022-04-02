@@ -36,6 +36,7 @@ protected:
 		glm::vec3	position;
 		glm::vec3	normal;
 		glm::vec2	texCoords;
+		glm::vec4	tangent;	// tangent.w is the bitangent sign
 	};
 
 	void* getDataPtr(int* bytes, int accessorId, tinygltf::Model* loadedModel);

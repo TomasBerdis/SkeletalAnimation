@@ -7,20 +7,18 @@ Mesh::Mesh(tinygltf::Mesh *mesh, tinygltf::Model *loadedModel)
 	int const positionsAccessorId	= mesh->primitives[0].attributes["POSITION"];
 	int const normalsAccessorId		= mesh->primitives[0].attributes["NORMAL"];
 	int const texCoords0AccessorId	= mesh->primitives[0].attributes["TEXCOORD_0"];
+	int const tangentAccessorId		= mesh->primitives[0].attributes["TANGENT"];
 	int const indicesAccessorId		= mesh->primitives[0].indices;
 
 	int numVertices = loadedModel->accessors[positionsAccessorId].count;
 	int numIndices  = loadedModel->accessors[indicesAccessorId].count;
-	int numPositionBytes;
-	int numNormalBytes;
-	int numTexCoords0Bytes;
-	int numIndicesBytes;
 
 	// WARNING: Assuming data is stored in buffers sequentally!!! 
-	float *positionsPtr	 = (float *) getDataPtr(&numPositionBytes	, positionsAccessorId	, loadedModel);
-	float *normalsPtr	 = (float *) getDataPtr(&numNormalBytes		, normalsAccessorId		, loadedModel);
-	float *texCoords0Ptr = (float *) getDataPtr(&numTexCoords0Bytes	, texCoords0AccessorId	, loadedModel);
-	unsigned short *indicesPtr = (unsigned short *)	getDataPtr(&numIndicesBytes, indicesAccessorId, loadedModel);
+	float *positionsPtr	 = (float *) getDataPtr(nullptr	, positionsAccessorId	, loadedModel);
+	float *normalsPtr	 = (float *) getDataPtr(nullptr, normalsAccessorId		, loadedModel);
+	float *texCoords0Ptr = (float *) getDataPtr(nullptr, texCoords0AccessorId	, loadedModel);
+	float *tangentPtr	 = (float *) getDataPtr(nullptr, tangentAccessorId		, loadedModel);
+	unsigned short *indicesPtr = (unsigned short *)	getDataPtr(nullptr, indicesAccessorId, loadedModel);
 
 	for (size_t i = 0; i < numVertices; i++)
 	{
@@ -33,6 +31,10 @@ Mesh::Mesh(tinygltf::Mesh *mesh, tinygltf::Model *loadedModel)
 		vertex.normal.z		= *normalsPtr++;
 		vertex.texCoords.x  = *texCoords0Ptr++;
 		vertex.texCoords.y  = *texCoords0Ptr++;
+		vertex.tangent.x	= *tangentPtr++;
+		vertex.tangent.y	= *tangentPtr++;
+		vertex.tangent.z	= *tangentPtr++;
+		vertex.tangent.w	= *tangentPtr++;
 		vertices.push_back(vertex);
 	}
 
@@ -62,7 +64,8 @@ void * Mesh::getDataPtr(int *bytes, int accessorId, tinygltf::Model *loadedModel
 	// Buffer
 	const tinygltf::Buffer *buffer = &loadedModel->buffers[bufferId];
 
-	*bytes = byteLength;
+	if (bytes != nullptr)
+		*bytes = byteLength;
 
 	return (void *) &buffer->data[byteOffset];
 }
@@ -136,6 +139,12 @@ void Mesh::initOpenGLBuffers()
 	glVertexArrayAttribFormat(vao, 2, 2, GL_FLOAT, GL_FALSE, 0);
 	glVertexArrayVertexBuffer(vao, 2, vbo, (GLintptr) offsetof(Vertex, texCoords), sizeof(Vertex));
 
+	// tangent
+	glVertexArrayAttribBinding(vao, 3, 3);
+	glEnableVertexArrayAttrib(vao, 3);
+	glVertexArrayAttribFormat(vao, 3, 4, GL_FLOAT, GL_FALSE, 0);
+	glVertexArrayVertexBuffer(vao, 3, vbo, (GLintptr) offsetof(Vertex, tangent), sizeof(Vertex));
+
 	// indices
 	glVertexArrayElementBuffer(vao, ebo);
 }
@@ -148,14 +157,16 @@ void Mesh::render()
 	program->setUniform("uModelMatrix", glm::mat4(1.0f));
 	program->setUniform("uViewMatrix", renderer->getCamera()->getViewMatrix());
 	program->setUniform("uProjectionMatrix", renderer->getCamera()->getProjectionMatrix());
+	program->setUniform("uNormalMatrix", glm::transpose(glm::inverse(glm::mat3(1.0f))));
+
 	program->setUniform("uCameraPos", renderer->getCamera()->getPosition());
 	program->setUniform("uLightPos", glm::vec3{ 0.0f, 2.0f, 1.0f });
 	program->setUniform("uLightColor", glm::vec3{ 1.0f, 1.0f, 1.0f });
 
 	renderer->bindTexture(material.colorTexture, 0);
 	renderer->bindTexture(material.normalTexture, 1);
-	program->setUniform("colorTexture", 0);
-	program->setUniform("normalTexture", 1);
+	program->setUniform("diffuseMap", 0);
+	program->setUniform("normalMap", 1);
 
 	glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, 0);

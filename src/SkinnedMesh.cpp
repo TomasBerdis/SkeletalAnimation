@@ -6,26 +6,22 @@ SkinnedMesh::SkinnedMesh(tinygltf::Mesh* mesh, tinygltf::Model* loadedModel)
 	int const positionsAccessorId	= mesh->primitives[0].attributes["POSITION"];
 	int const normalsAccessorId		= mesh->primitives[0].attributes["NORMAL"];
 	int const texCoords0AccessorId	= mesh->primitives[0].attributes["TEXCOORD_0"];
+	int const tangentAccessorId		= mesh->primitives[0].attributes["TANGENT"];
 	int const jointsAccessorId		= mesh->primitives[0].attributes["JOINTS_0"];
 	int const weightsAccessorId		= mesh->primitives[0].attributes["WEIGHTS_0"];
 	int const indicesAccessorId		= mesh->primitives[0].indices;
 
 	int numVertices = loadedModel->accessors[positionsAccessorId].count;
 	int numIndices = loadedModel->accessors[indicesAccessorId].count;
-	int numPositionBytes;
-	int numNormalBytes;
-	int numTexCoords0Bytes;
-	int numJointsBytes;
-	int numWeightsBytes;
-	int numIndicesBytes;
 
 	// WARNING: Assuming data is stored in buffers sequentally!!! 
-	float* positionsPtr			= (float*)			getDataPtr(&numPositionBytes	, positionsAccessorId	, loadedModel);
-	float* normalsPtr			= (float*)			getDataPtr(&numNormalBytes		, normalsAccessorId		, loadedModel);
-	float* texCoords0Ptr		= (float*)			getDataPtr(&numTexCoords0Bytes	, texCoords0AccessorId	, loadedModel);
-	unsigned char* jointsPtr	= (unsigned char*)	getDataPtr(&numJointsBytes		, jointsAccessorId		, loadedModel);
-	float* weightsPtr			= (float*)			getDataPtr(&numWeightsBytes		, weightsAccessorId		, loadedModel);
-	unsigned short* indicesPtr	= (unsigned short*)	getDataPtr(&numIndicesBytes		, indicesAccessorId		, loadedModel);
+	float* positionsPtr			= (float*)			getDataPtr(nullptr, positionsAccessorId		, loadedModel);
+	float* normalsPtr			= (float*)			getDataPtr(nullptr, normalsAccessorId		, loadedModel);
+	float* texCoords0Ptr		= (float*)			getDataPtr(nullptr, texCoords0AccessorId	, loadedModel);
+	float* tangentPtr			= (float*)			getDataPtr(nullptr, tangentAccessorId		, loadedModel);
+	unsigned char* jointsPtr	= (unsigned char*)	getDataPtr(nullptr, jointsAccessorId		, loadedModel);
+	float* weightsPtr			= (float*)			getDataPtr(nullptr, weightsAccessorId		, loadedModel);
+	unsigned short* indicesPtr	= (unsigned short*)	getDataPtr(nullptr, indicesAccessorId		, loadedModel);
 
 	for (size_t i = 0; i < numVertices; i++)
 	{
@@ -38,6 +34,10 @@ SkinnedMesh::SkinnedMesh(tinygltf::Mesh* mesh, tinygltf::Model* loadedModel)
 		vertex.normal.z = *normalsPtr++;
 		vertex.texCoords.x = *texCoords0Ptr++;
 		vertex.texCoords.y = *texCoords0Ptr++;
+		vertex.tangent.x = *tangentPtr++;
+		vertex.tangent.y = *tangentPtr++;
+		vertex.tangent.z = *tangentPtr++;
+		vertex.tangent.w = *tangentPtr++;
 		vertex.boneIds.x = *jointsPtr++;
 		vertex.boneIds.y = *jointsPtr++;
 		vertex.boneIds.z = *jointsPtr++;
@@ -71,14 +71,16 @@ void SkinnedMesh::render()
 	program->setUniform("uModelMatrix"		, glm::mat4(1.0f));
 	program->setUniform("uViewMatrix"		, renderer->getCamera()->getViewMatrix());
 	program->setUniform("uProjectionMatrix"	, renderer->getCamera()->getProjectionMatrix());
+	program->setUniform("uNormalMatrix", glm::transpose(glm::inverse(glm::mat3(1.0f))));
+
 	program->setUniform("uCameraPos", renderer->getCamera()->getPosition());
 	program->setUniform("uLightPos", glm::vec3 { 0.0f, 2.0f, 1.0f });
 	program->setUniform("uLightColor", glm::vec3 { 1.0f, 1.0f, 1.0f });
 
 	renderer->bindTexture(material.colorTexture, 0);
 	renderer->bindTexture(material.normalTexture, 1);
-	program->setUniform("colorTexture", 0);
-	program->setUniform("normalTexture", 1);
+	program->setUniform("diffuseMap", 0);
+	program->setUniform("normalMap", 1);
 
 	glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, 0);
@@ -116,17 +118,23 @@ void SkinnedMesh::initOpenGLBuffers()
 	glVertexArrayAttribFormat(vao, 2, 2, GL_FLOAT, GL_FALSE, 0);
 	glVertexArrayVertexBuffer(vao, 2, vbo, (GLintptr) offsetof(Vertex, texCoords), sizeof(Vertex));
 
-	// bone ids
+	// tangent
 	glVertexArrayAttribBinding(vao, 3, 3);
 	glEnableVertexArrayAttrib(vao, 3);
-	glVertexArrayAttribIFormat(vao, 3, 4, GL_INT, 0);
-	glVertexArrayVertexBuffer(vao, 3, vbo, (GLintptr) offsetof(Vertex, boneIds), sizeof(Vertex));
+	glVertexArrayAttribFormat(vao, 3, 4, GL_FLOAT, GL_FALSE, 0);
+	glVertexArrayVertexBuffer(vao, 3, vbo, (GLintptr)offsetof(Vertex, tangent), sizeof(Vertex));
 
-	// bone weights
+	// bone ids
 	glVertexArrayAttribBinding(vao, 4, 4);
 	glEnableVertexArrayAttrib(vao, 4);
-	glVertexArrayAttribFormat(vao, 4, 4, GL_FLOAT, GL_FALSE, 0);
-	glVertexArrayVertexBuffer(vao, 4, vbo, (GLintptr) offsetof(Vertex, boneWeights), sizeof(Vertex));
+	glVertexArrayAttribIFormat(vao, 4, 4, GL_INT, 0);
+	glVertexArrayVertexBuffer(vao, 4, vbo, (GLintptr) offsetof(Vertex, boneIds), sizeof(Vertex));
+
+	// bone weights
+	glVertexArrayAttribBinding(vao, 5, 5);
+	glEnableVertexArrayAttrib(vao, 5);
+	glVertexArrayAttribFormat(vao, 5, 4, GL_FLOAT, GL_FALSE, 0);
+	glVertexArrayVertexBuffer(vao, 5, vbo, (GLintptr) offsetof(Vertex, boneWeights), sizeof(Vertex));
 
 	// indices
 	glVertexArrayElementBuffer(vao, ebo);

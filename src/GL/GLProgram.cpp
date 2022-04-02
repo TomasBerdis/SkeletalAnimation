@@ -102,6 +102,13 @@ void GLProgram::setUniformv(const GLchar* uniformName, T uniformValue)
 		glProgramUniform1iv(program, uniformLocation, (GLsizei)sizeof(uniformValue) / sizeof(uniformValue[0]), reinterpret_cast <GLint*> (uniformValue));
 }
 
+void GLProgram::setUniform(const GLchar* uniformName, glm::mat3 uniformValue)
+{
+	use();
+	GLint uniformLocation = glGetUniformLocation(program, uniformName);
+	glProgramUniformMatrix3fv(program, uniformLocation, 1, GL_FALSE, glm::value_ptr(uniformValue));
+}
+
 void GLProgram::setUniform(const GLchar* uniformName, glm::mat4 uniformValue)
 {
 	use();
