@@ -6,7 +6,7 @@ SkinnedModel::SkinnedModel(std::string path)
 	loadTextures();
 
 	startingNodeId = loadedModel.scenes[loadedModel.defaultScene].nodes[0];
-	processNode(&loadedModel.nodes[startingNodeId]);
+	processNode(&loadedModel.nodes[startingNodeId], glm::mat4{ 1.0f });
 }
 
 void SkinnedModel::render()
@@ -18,17 +18,19 @@ void SkinnedModel::render()
 }
 
 
-void SkinnedModel::processNode(tinygltf::Node* node)
+void SkinnedModel::processNode(tinygltf::Node* node, glm::mat4 parentTransform)
 {
+	glm::mat4 nodeGlobalTransform = parentTransform * getTRSMatrix(&node->translation, &node->rotation, &node->scale);
+
 	if (node->mesh > -1)
 	{
-		SkinnedMesh* mesh = new SkinnedMesh(&loadedModel.meshes[node->mesh], &loadedModel);
+		SkinnedMesh* mesh = new SkinnedMesh(&loadedModel.meshes[node->mesh], &loadedModel, nodeGlobalTransform);
 		meshes.push_back(mesh);
 	}
 
 	for (size_t i = 0; i < node->children.size(); i++)
 	{
-		processNode(&loadedModel.nodes[node->children[i]]);
+		processNode(&loadedModel.nodes[node->children[i]], nodeGlobalTransform);
 	}
 }
 

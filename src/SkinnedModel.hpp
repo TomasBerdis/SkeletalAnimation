@@ -24,6 +24,6 @@ private:
 	std::vector<Bone> bones;
 	int startingNodeId = -1;
 
-	void processNode(tinygltf::Node* node);
+	void processNode(tinygltf::Node* node, glm::mat4 parentTransform);
 	void processBones();
 };
