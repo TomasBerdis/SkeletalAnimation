@@ -21,7 +21,7 @@ struct Material
 class Mesh
 {
 public:
-	Mesh(tinygltf::Mesh *mesh, tinygltf::Model *loadedModel);
+	Mesh(tinygltf::Mesh *mesh, tinygltf::Model *loadedModel, glm::mat4 globalTransform);
 	Mesh() {};
 	~Mesh();
 
@@ -29,6 +29,7 @@ public:
 
 protected:
 	std::vector<unsigned short> indices;
+	glm::mat4 globalTransform;
 	Material material;
 	GLuint vao, vbo, ebo;
 	struct Vertex

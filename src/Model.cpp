@@ -6,7 +6,7 @@ Model::Model(std::string path)
 	loadTextures();
 
 	int startingNodeId = loadedModel.scenes[loadedModel.defaultScene].nodes[0];
-	processNode(&loadedModel.nodes[startingNodeId]);
+	processNode(&loadedModel.nodes[startingNodeId], glm::mat4 {1.0f});
 }
 
 Model::~Model()
@@ -48,17 +48,19 @@ void Model::loadTextures()
 	}
 }
 
-void Model::processNode(tinygltf::Node *node)
+void Model::processNode(tinygltf::Node *node, glm::mat4 parentTransform)
 {
+	glm::mat4 nodeGlobalTransform = parentTransform * getTRSMatrix(&node->translation, &node->rotation, &node->scale);
+
 	if (node->mesh > -1)
 	{
-		Mesh *mesh = new Mesh(&loadedModel.meshes[node->mesh], &loadedModel);
+		Mesh *mesh = new Mesh(&loadedModel.meshes[node->mesh], &loadedModel, nodeGlobalTransform);
 		meshes.push_back(mesh);
 	}
 
 	for (size_t i = 0; i < node->children.size(); i++)
 	{
-		processNode(&loadedModel.nodes[node->children[i]]);
+		processNode(&loadedModel.nodes[node->children[i]], nodeGlobalTransform);
 	}
 }
 
@@ -68,4 +70,24 @@ void Model::render()
 	{
 		meshes[i]->render();
 	}
+}
+
+glm::mat4 Model::getTRSMatrix(std::vector<double>* translation, std::vector<double>* rotation, std::vector<double>* scale)
+{
+	if (translation->empty() && rotation->empty() && scale->empty())
+		return glm::mat4{ 1.0f };
+
+	glm::mat4 T{ 1.0f };
+	glm::mat4 R{ 1.0f };
+	glm::mat4 S{ 1.0f };
+
+	// WARNING: Potentially slow code
+	if (!translation->empty())
+		T = glm::translate(glm::mat4{ 1.0f }, { translation->at(0), translation->at(1), translation->at(2) });
+	if (!rotation->empty())
+		R = glm::mat4_cast(glm::quat((float)(rotation->at(3)), (float)(rotation->at(0)), (float)(rotation->at(1)), (float)(rotation->at(2))));
+	if (!scale->empty())
+		S = glm::scale(glm::mat4{ 1.0f }, { scale->at(0), scale->at(1), scale->at(2) });
+	
+	return T * R * S;
 }

@@ -1,8 +1,10 @@
 #include "Mesh.hpp"
 
 
-Mesh::Mesh(tinygltf::Mesh *mesh, tinygltf::Model *loadedModel)
+Mesh::Mesh(tinygltf::Mesh *mesh, tinygltf::Model *loadedModel, glm::mat4 globalTransform)
 {
+	this->globalTransform = globalTransform;
+
 	// Accessors
 	int const positionsAccessorId	= mesh->primitives[0].attributes["POSITION"];
 	int const normalsAccessorId		= mesh->primitives[0].attributes["NORMAL"];
@@ -154,7 +156,7 @@ void Mesh::render()
 	Renderer* renderer = Renderer::getInstance();
 
 	GLProgram* program = renderer->useProgram(Renderer::Program::MESH);
-	program->setUniform("uModelMatrix", glm::mat4(1.0f));
+	program->setUniform("uModelMatrix", globalTransform);
 	program->setUniform("uViewMatrix", renderer->getCamera()->getViewMatrix());
 	program->setUniform("uProjectionMatrix", renderer->getCamera()->getProjectionMatrix());
 	program->setUniform("uNormalMatrix", glm::transpose(glm::inverse(glm::mat3(1.0f))));

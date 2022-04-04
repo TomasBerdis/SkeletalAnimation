@@ -5,7 +5,7 @@ SkinnedModel::SkinnedModel(std::string path)
 	loadFile(path);
 	loadTextures();
 
-	int startingNodeId = loadedModel.scenes[loadedModel.defaultScene].nodes[0];
+	startingNodeId = loadedModel.scenes[loadedModel.defaultScene].nodes[0];
 	processNode(&loadedModel.nodes[startingNodeId]);
 }
 
@@ -29,5 +29,17 @@ void SkinnedModel::processNode(tinygltf::Node* node)
 	for (size_t i = 0; i < node->children.size(); i++)
 	{
 		processNode(&loadedModel.nodes[node->children[i]]);
+	}
+}
+
+void SkinnedModel::processBones()
+{
+	for (size_t i = 0; i < loadedModel.skins[0].joints.size(); i++)
+	{
+		int nodeId = loadedModel.skins[0].joints[i];
+
+		Bone bone;
+		bone.id = nodeId;
+		bone.name = loadedModel.nodes[nodeId].name;
 	}
 }
