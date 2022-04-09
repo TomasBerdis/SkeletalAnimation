@@ -21,11 +21,13 @@ struct Material
 class Mesh
 {
 public:
-	Mesh(tinygltf::Mesh *mesh, tinygltf::Model *loadedModel, glm::mat4 globalTransform);
+	Mesh(tinygltf::Primitive *primitive, tinygltf::Model *loadedModel, glm::mat4 globalTransform);
 	Mesh() {};
 	~Mesh();
 
 	void virtual render();
+	static void* getDataPtr(int* bytes, int accessorId, tinygltf::Model* loadedModel);
+	static void* copyBufferData(int accessorId, tinygltf::Model* loadedModel);
 
 protected:
 	std::vector<unsigned short> indices;
@@ -40,9 +42,7 @@ protected:
 		glm::vec4	tangent;	// tangent.w is the bitangent sign
 	};
 
-	void* getDataPtr(int* bytes, int accessorId, tinygltf::Model* loadedModel);
-	void* copyBufferData(int accessorId, tinygltf::Model* loadedModel);
-	void loadMaterial(tinygltf::Mesh* mesh, tinygltf::Model* loadedModel);
+	void loadMaterial(tinygltf::Primitive* primitive, tinygltf::Model* loadedModel);
 	void initOpenGLBuffers();
 
 private:

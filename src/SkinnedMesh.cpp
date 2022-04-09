@@ -1,17 +1,15 @@
 #include "SkinnedMesh.hpp"
 
-SkinnedMesh::SkinnedMesh(tinygltf::Mesh* mesh, tinygltf::Model* loadedModel, glm::mat4 globalTransform)
+SkinnedMesh::SkinnedMesh(tinygltf::Primitive* primitive, tinygltf::Model* loadedModel, glm::mat4 globalTransform)
 {
-	this->globalTransform = globalTransform;
-
 	// Accessors
-	int const positionsAccessorId	= mesh->primitives[0].attributes["POSITION"];
-	int const normalsAccessorId		= mesh->primitives[0].attributes["NORMAL"];
-	int const texCoords0AccessorId	= mesh->primitives[0].attributes["TEXCOORD_0"];
-	int const tangentAccessorId		= mesh->primitives[0].attributes["TANGENT"];
-	int const jointsAccessorId		= mesh->primitives[0].attributes["JOINTS_0"];
-	int const weightsAccessorId		= mesh->primitives[0].attributes["WEIGHTS_0"];
-	int const indicesAccessorId		= mesh->primitives[0].indices;
+	int const positionsAccessorId	= primitive->attributes["POSITION"];
+	int const normalsAccessorId		= primitive->attributes["NORMAL"];
+	int const texCoords0AccessorId	= primitive->attributes["TEXCOORD_0"];
+	int const tangentAccessorId		= primitive->attributes["TANGENT"];
+	int const jointsAccessorId		= primitive->attributes["JOINTS_0"];
+	int const weightsAccessorId		= primitive->attributes["WEIGHTS_0"];
+	int const indicesAccessorId		= primitive->indices;
 
 	int numVertices = loadedModel->accessors[positionsAccessorId].count;
 	int numIndices = loadedModel->accessors[indicesAccessorId].count;
@@ -57,36 +55,12 @@ SkinnedMesh::SkinnedMesh(tinygltf::Mesh* mesh, tinygltf::Model* loadedModel, glm
 		indices.push_back(index);
 	}
 
-	loadMaterial(mesh, loadedModel);
+	loadMaterial(primitive, loadedModel);
 	initOpenGLBuffers();
 }
 
 SkinnedMesh::~SkinnedMesh()
 {
-}
-
-void SkinnedMesh::render()
-{
-	Renderer* renderer = Renderer::getInstance();
-
-	GLProgram* program = renderer->useProgram(Renderer::Program::MESH);
-	program->setUniform("uModelMatrix"		, globalTransform);
-	program->setUniform("uViewMatrix"		, renderer->getCamera()->getViewMatrix());
-	program->setUniform("uProjectionMatrix"	, renderer->getCamera()->getProjectionMatrix());
-	program->setUniform("uNormalMatrix", glm::transpose(glm::inverse(glm::mat3(1.0f))));
-
-	program->setUniform("uCameraPos", renderer->getCamera()->getPosition());
-	program->setUniform("uLightPos", glm::vec3 { 0.0f, 2.0f, 1.0f });
-	program->setUniform("uLightColor", glm::vec3 { 1.0f, 1.0f, 1.0f });
-
-	renderer->bindTexture(material.colorTexture, 0);
-	renderer->bindTexture(material.normalTexture, 1);
-	program->setUniform("diffuseMap", 0);
-	program->setUniform("normalMap", 1);
-
-	glBindVertexArray(vao);
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, 0);
-	glBindVertexArray(0);
 }
 
 void SkinnedMesh::initOpenGLBuffers()
@@ -140,4 +114,35 @@ void SkinnedMesh::initOpenGLBuffers()
 
 	// indices
 	glVertexArrayElementBuffer(vao, ebo);
+}
+
+void SkinnedMesh::render()
+{
+	Renderer* renderer = Renderer::getInstance();
+
+	GLProgram* program = renderer->useProgram(Renderer::Program::MESH);
+	program->setUniform("uModelMatrix", globalTransform);
+	program->setUniform("uViewMatrix", renderer->getCamera()->getViewMatrix());
+	program->setUniform("uProjectionMatrix", renderer->getCamera()->getProjectionMatrix());
+	program->setUniform("uNormalMatrix", glm::transpose(glm::inverse(glm::mat3(1.0f))));
+
+	program->setUniform("uCameraPos", renderer->getCamera()->getPosition());
+	program->setUniform("uLightPos", glm::vec3{ 0.0f, 2.0f, 1.0f });
+	program->setUniform("uLightColor", glm::vec3{ 1.0f, 1.0f, 1.0f });
+
+	renderer->bindTexture(material.colorTexture, 0);
+	if (material.normalTexture != "")
+	{
+		renderer->bindTexture(material.normalTexture, 1);
+		program->setUniform("uUseNormalMap", true);
+	}
+	else
+		program->setUniform("uUseNormalMap", false);
+
+	program->setUniform("diffuseMap", 0);
+	program->setUniform("normalMap", 1);
+
+	glBindVertexArray(vao);
+	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, 0);
+	glBindVertexArray(0);
 }

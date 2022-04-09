@@ -6,6 +6,7 @@
 #include <map>
 #include <iostream>
 #include "tinyGLTF/tiny_gltf.h"
+#include "tinyGLTF/stb_image.h"
 
 struct Texture
 {
@@ -25,11 +26,13 @@ public:
 	{
 		MESH, SKINNED_MESH
 	};
+	static const std::string debugTexture;
 
 	static Renderer *getInstance();
 	GLProgram *useProgram(Program program);
 	Camera *getCamera();
 	void setCamera(Camera* camera);
+	void loadTexture(std::string name);
 	void loadTexture(tinygltf::Image* image);
 	void bindTexture(std::string name, unsigned int textureUnit);
 

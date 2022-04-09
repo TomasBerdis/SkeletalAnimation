@@ -36,6 +36,7 @@ public:
 	}
 	template<typename T>
 	void setUniformv(const GLchar* uniformName, T uniformValue);
+	void setUniform(const GLchar* uniformName, bool uniformValue);
 	void setUniform(const GLchar* uniformName, glm::mat3 uniformValue);
 	void setUniform(const GLchar* uniformName, glm::mat4 uniformValue);
 	void setUniform(const GLchar* uniformName, glm::vec2 uniformValue);

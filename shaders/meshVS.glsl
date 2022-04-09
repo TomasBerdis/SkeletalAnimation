@@ -25,6 +25,7 @@ void main()
 {
     vFragPos = vec3(uModelMatrix * vec4(position, 1.0f));
     vTexCoords = texCoords;
+    vNormal = normal;
     
     vec3 T = normalize(uNormalMatrix * tangent.xyz);
     vec3 N = normalize(uNormalMatrix * normal);

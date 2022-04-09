@@ -42,10 +42,7 @@ void Model::loadFile(std::string path)
 void Model::loadTextures()
 {
 	Renderer* renderer = Renderer::getInstance();
-	for (size_t i = 0; i < loadedModel.images.size(); i++)
-	{
-		renderer->loadTexture(&loadedModel.images[i]);
-	}
+	std::ranges::for_each(loadedModel.images, [&](tinygltf::Image i) { renderer->loadTexture(&i); });
 }
 
 void Model::processNode(tinygltf::Node *node, glm::mat4 parentTransform)
@@ -54,22 +51,20 @@ void Model::processNode(tinygltf::Node *node, glm::mat4 parentTransform)
 
 	if (node->mesh > -1)
 	{
-		Mesh *mesh = new Mesh(&loadedModel.meshes[node->mesh], &loadedModel, nodeGlobalTransform);
-		meshes.push_back(mesh);
+		tinygltf::Mesh* meshPtr = &loadedModel.meshes[node->mesh];
+		for (size_t i = 0; i < meshPtr->primitives.size(); i++)
+		{
+			Mesh* mesh = new Mesh(&meshPtr->primitives[i], &loadedModel, nodeGlobalTransform);
+			meshes.push_back(mesh);
+		}
 	}
 
-	for (size_t i = 0; i < node->children.size(); i++)
-	{
-		processNode(&loadedModel.nodes[node->children[i]], nodeGlobalTransform);
-	}
+	std::ranges::for_each(node->children, [&](int i) { processNode(&loadedModel.nodes[i], nodeGlobalTransform); });
 }
 
 void Model::render()
 {
-	for (size_t i = 0; i < meshes.size(); i++)
-	{
-		meshes[i]->render();
-	}
+	std::ranges::for_each(meshes, [](Mesh* m) { m->render(); });
 }
 
 glm::mat4 Model::getTRSMatrix(std::vector<double>* translation, std::vector<double>* rotation, std::vector<double>* scale)

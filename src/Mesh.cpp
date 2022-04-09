@@ -1,16 +1,16 @@
 #include "Mesh.hpp"
 
 
-Mesh::Mesh(tinygltf::Mesh *mesh, tinygltf::Model *loadedModel, glm::mat4 globalTransform)
+Mesh::Mesh(tinygltf::Primitive *primitive, tinygltf::Model *loadedModel, glm::mat4 globalTransform)
 {
 	this->globalTransform = globalTransform;
 
 	// Accessors
-	int const positionsAccessorId	= mesh->primitives[0].attributes["POSITION"];
-	int const normalsAccessorId		= mesh->primitives[0].attributes["NORMAL"];
-	int const texCoords0AccessorId	= mesh->primitives[0].attributes["TEXCOORD_0"];
-	int const tangentAccessorId		= mesh->primitives[0].attributes["TANGENT"];
-	int const indicesAccessorId		= mesh->primitives[0].indices;
+	int const positionsAccessorId	= primitive->attributes["POSITION"];
+	int const normalsAccessorId		= primitive->attributes["NORMAL"];
+	int const texCoords0AccessorId	= primitive->attributes["TEXCOORD_0"];
+	int const tangentAccessorId		= primitive->attributes["TANGENT"];
+	int const indicesAccessorId		= primitive->indices;
 
 	int numVertices = loadedModel->accessors[positionsAccessorId].count;
 	int numIndices  = loadedModel->accessors[indicesAccessorId].count;
@@ -46,7 +46,7 @@ Mesh::Mesh(tinygltf::Mesh *mesh, tinygltf::Model *loadedModel, glm::mat4 globalT
 		indices.push_back(index);
 	}
 
-	loadMaterial(mesh, loadedModel);
+	loadMaterial(primitive, loadedModel);
 	initOpenGLBuffers();
 }
 
@@ -97,17 +97,25 @@ void * Mesh::copyBufferData(int accessorId, tinygltf::Model *loadedModel)
 	return dataPtr;
 }
 
-void Mesh::loadMaterial(tinygltf::Mesh* mesh, tinygltf::Model* loadedModel)
+void Mesh::loadMaterial(tinygltf::Primitive* primitive, tinygltf::Model* loadedModel)
 {
-	tinygltf::Material* m = &loadedModel->materials[mesh->primitives[0].material];
+	tinygltf::Material* m = &loadedModel->materials[primitive->material];
 
 	int colorTextureId = m->pbrMetallicRoughness.baseColorTexture.index;
-	int colorTextureImageId = loadedModel->textures[colorTextureId].source;
-	material.colorTexture = loadedModel->images[colorTextureImageId].name;
+	if (colorTextureId > -1)
+	{
+		int colorTextureImageId = loadedModel->textures[colorTextureId].source;
+		material.colorTexture = loadedModel->images[colorTextureImageId].name;
+	}
+	else
+		material.colorTexture = Renderer::debugTexture;
 
 	int normalTextureId = m->normalTexture.index;
-	int normalTextureImageId = loadedModel->textures[normalTextureId].source;
-	material.normalTexture = loadedModel->images[normalTextureImageId].name;
+	if (normalTextureId > -1)
+	{
+		int normalTextureImageId = loadedModel->textures[normalTextureId].source;
+		material.normalTexture = loadedModel->images[normalTextureImageId].name;
+	}
 }
 
 void Mesh::initOpenGLBuffers()
@@ -166,7 +174,14 @@ void Mesh::render()
 	program->setUniform("uLightColor", glm::vec3{ 1.0f, 1.0f, 1.0f });
 
 	renderer->bindTexture(material.colorTexture, 0);
-	renderer->bindTexture(material.normalTexture, 1);
+	if (material.normalTexture != "")
+	{
+		renderer->bindTexture(material.normalTexture, 1);
+		program->setUniform("uUseNormalMap", true);
+	}
+	else
+		program->setUniform("uUseNormalMap", false);
+
 	program->setUniform("diffuseMap", 0);
 	program->setUniform("normalMap", 1);
 

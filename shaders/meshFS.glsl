@@ -14,13 +14,20 @@ uniform sampler2D normalMap;
 uniform vec3 uCameraPos;
 uniform vec3 uLightPos;
 uniform vec3 uLightColor;
+uniform bool uUseNormalMap;
 
 out vec4 color;
 
 void main()
 {
-    vec3 normal = texture(normalMap, vTexCoords).rgb;
-    normal = normalize(normal * 2.0 - 1.0);
+    vec3 normal;
+    if (uUseNormalMap)
+    {
+        normal = texture(normalMap, vTexCoords).rgb;
+        normal = normalize(normal * 2.0 - 1.0);
+    }
+    else
+        normal = vNormal;
 
     vec3 colorSample = texture(diffuseMap, vTexCoords).xyz;
 

@@ -61,7 +61,7 @@ void initialize()
     Renderer *renderer = Renderer::getInstance();
     renderer->setCamera(camera);
 
-    model = new SkinnedModel(MODEL_KACHUJIN);
+    model = new Model(MODEL_VAMPIRE);
 }
 
 void run()

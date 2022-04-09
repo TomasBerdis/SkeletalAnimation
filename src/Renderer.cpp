@@ -1,10 +1,12 @@
 #include "Renderer.hpp"
 
 Renderer *Renderer::instance = nullptr;
+const std::string Renderer::debugTexture = "debugTexture.png";
 
 Renderer::Renderer()
 {
 	programMap.clear();
+	loadTexture(DEBUG_TEXTURE);
 }
 
 Renderer::~Renderer()
@@ -58,6 +60,48 @@ void Renderer::createProgram(Program programId)
 	}
 
 	programMap.insert({ programId, program });
+}
+
+void Renderer::loadTexture(std::string path)
+{
+	int pos = path.find_last_of("/") + 1;
+	std::string name = path.substr(pos, path.length() - pos);
+
+	if (textureMap.contains(name))
+		return;
+
+	Texture texture;
+	int channels;
+	texture.data = stbi_load(path.c_str(), &texture.width, &texture.height, &channels, 0);
+
+	if (texture.data == NULL)
+		std::cerr << "Renderer: Cannot load texture: " << name << std::endl;
+
+	if (channels == 3)
+		texture.format = GL_RGB;
+	else if (channels == 4)
+		texture.format = GL_RGBA;
+	else
+		std::cerr << "Renderer: Unsupported texture format" << std::endl;
+
+	texture.type = GL_UNSIGNED_BYTE;
+
+	// OpenGL code
+	glGenTextures(1, &texture.id);
+	glBindTexture(GL_TEXTURE_2D, texture.id);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.width, texture.height, 0,
+		texture.format, texture.type, texture.data);
+
+	textureMap.insert({ name, texture });
+
+	std::cout << "Texture: \'" << name << "\' loaded" << std::endl;
+
+	stbi_image_free(texture.data);
 }
 
 void Renderer::loadTexture(tinygltf::Image* image)
