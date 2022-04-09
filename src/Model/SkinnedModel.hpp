@@ -22,7 +22,7 @@ public:
 
 private:
 	std::vector<SkinnedMesh*> meshes;
-	std::vector<Bone> bones;
+	std::vector<Bone> armature;
 	int startingNodeId = -1;
 	int currentNodeId = -1;
 	int inverseBMAccessorId = -1;

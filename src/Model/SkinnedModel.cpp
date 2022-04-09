@@ -40,7 +40,7 @@ void SkinnedModel::processNode(tinygltf::Node* node, glm::mat4 parentTransform)
 		bone.inverseBindMatrix = getMat4FromFloatPtr(inverseBMPtr);
 		bone.globalTransform = nodeGlobalTransform;
 
-		bones.push_back(bone);
+		armature.push_back(bone);
 	}
 
 	std::ranges::for_each(node->children, [&](int childId)
