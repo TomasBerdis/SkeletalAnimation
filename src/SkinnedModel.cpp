@@ -21,6 +21,8 @@ void SkinnedModel::render()
 
 void SkinnedModel::processNode(tinygltf::Node* node, glm::mat4 parentTransform)
 {
+	glm::mat4 nodeGlobalTransform = parentTransform * getTRSMatrix(&node->translation, &node->rotation, &node->scale);
+
 	if (node->mesh > -1)
 	{
 		std::ranges::for_each(loadedModel.meshes[node->mesh].primitives, [&](tinygltf::Primitive primitive)
