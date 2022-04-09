@@ -2,6 +2,8 @@
 
 SkinnedMesh::SkinnedMesh(tinygltf::Primitive* primitive, tinygltf::Model* loadedModel, glm::mat4 globalTransform)
 {
+	this->globalTransform = globalTransform;
+
 	// Accessors
 	int const positionsAccessorId	= primitive->attributes["POSITION"];
 	int const normalsAccessorId		= primitive->attributes["NORMAL"];
