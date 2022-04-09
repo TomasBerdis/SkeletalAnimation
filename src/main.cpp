@@ -61,7 +61,7 @@ void initialize()
     Renderer *renderer = Renderer::getInstance();
     renderer->setCamera(camera);
 
-    model = new Model(MODEL_ALEX);
+    model = new SkinnedModel(MODEL_ALEX);
 }
 
 void run()

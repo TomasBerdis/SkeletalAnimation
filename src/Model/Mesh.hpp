@@ -4,8 +4,8 @@
 #include "GLEW/glew.h"
 #include "SDL2/SDL_opengl.h"
 #include "glm/glm.hpp"
-#include "Renderer.hpp"
-#include "GL/GLProgram.hpp"
+#include "../Renderer.hpp"
+#include "../GL/GLProgram.hpp"
 
 #include <stdlib.h>
 #include <string.h>

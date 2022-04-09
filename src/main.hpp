@@ -7,8 +7,8 @@
 
 #include "GL/GLProgram.hpp"
 #include "Camera.hpp"
-#include "Model.hpp"
-#include "SkinnedModel.hpp"
+#include "Model/Model.hpp"
+#include "Model/SkinnedModel.hpp"
 
 void initialize();
 void run();
