@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tinyGLTF/tiny_gltf.h"
+#include "../GltfUtil.hpp"
 #include "GLEW/glew.h"
 #include "SDL2/SDL_opengl.h"
 #include "glm/glm.hpp"
@@ -26,8 +26,6 @@ public:
 	~Mesh();
 
 	void virtual render();
-	static void* getDataPtr(int* bytes, int accessorId, tinygltf::Model* loadedModel);
-	static void* copyBufferData(int accessorId, tinygltf::Model* loadedModel);
 
 protected:
 	std::vector<unsigned short> indices;

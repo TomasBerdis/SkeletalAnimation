@@ -17,13 +17,13 @@ SkinnedMesh::SkinnedMesh(tinygltf::Primitive* primitive, tinygltf::Model* loaded
 	int numIndices = loadedModel->accessors[indicesAccessorId].count;
 
 	// WARNING: Assuming data is stored in buffers sequentally!!! 
-	float* positionsPtr			= (float*)			getDataPtr(nullptr, positionsAccessorId		, loadedModel);
-	float* normalsPtr			= (float*)			getDataPtr(nullptr, normalsAccessorId		, loadedModel);
-	float* texCoords0Ptr		= (float*)			getDataPtr(nullptr, texCoords0AccessorId	, loadedModel);
-	float* tangentPtr			= (float*)			getDataPtr(nullptr, tangentAccessorId		, loadedModel);
-	unsigned char* jointsPtr	= (unsigned char*)	getDataPtr(nullptr, jointsAccessorId		, loadedModel);
-	float* weightsPtr			= (float*)			getDataPtr(nullptr, weightsAccessorId		, loadedModel);
-	unsigned short* indicesPtr	= (unsigned short*)	getDataPtr(nullptr, indicesAccessorId		, loadedModel);
+	float* positionsPtr			= (float*)			gltfUtil::getDataPtr(nullptr, positionsAccessorId	, loadedModel);
+	float* normalsPtr			= (float*)			gltfUtil::getDataPtr(nullptr, normalsAccessorId		, loadedModel);
+	float* texCoords0Ptr		= (float*)			gltfUtil::getDataPtr(nullptr, texCoords0AccessorId	, loadedModel);
+	float* tangentPtr			= (float*)			gltfUtil::getDataPtr(nullptr, tangentAccessorId		, loadedModel);
+	unsigned char* jointsPtr	= (unsigned char*)	gltfUtil::getDataPtr(nullptr, jointsAccessorId		, loadedModel);
+	float* weightsPtr			= (float*)			gltfUtil::getDataPtr(nullptr, weightsAccessorId		, loadedModel);
+	unsigned short* indicesPtr	= (unsigned short*)	gltfUtil::getDataPtr(nullptr, indicesAccessorId		, loadedModel);
 
 	for (size_t i = 0; i < numVertices; i++)
 	{

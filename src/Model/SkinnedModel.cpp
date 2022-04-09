@@ -1,16 +1,14 @@
 #include "SkinnedModel.hpp"
 
-glm::mat4 getMat4FromFloatPtr(float* ptr);
-
 SkinnedModel::SkinnedModel(std::string path)
 {
-	loadFile(path);
+	gltfUtil::loadFile(path, &loadedModel);
 	loadTextures();
 
 	startingNodeId = currentNodeId = loadedModel.scenes[loadedModel.defaultScene].nodes[0];
 	assert(!loadedModel.skins.empty());
 	inverseBMAccessorId = loadedModel.skins[0].inverseBindMatrices;
-	inverseBMPtr = (float*) Mesh::getDataPtr(nullptr, inverseBMAccessorId, &loadedModel);
+	inverseBMPtr = (float*) gltfUtil::getDataPtr(nullptr, inverseBMAccessorId, &loadedModel);
 	processNode(&loadedModel.nodes[startingNodeId], glm::mat4{ 1.0f });
 }
 
@@ -21,7 +19,7 @@ void SkinnedModel::render()
 
 void SkinnedModel::processNode(tinygltf::Node* node, glm::mat4 parentTransform)
 {
-	glm::mat4 nodeGlobalTransform = parentTransform * getTRSMatrix(&node->translation, &node->rotation, &node->scale);
+	glm::mat4 nodeGlobalTransform = parentTransform * gltfUtil::getTRSMatrix(&node->translation, &node->rotation, &node->scale);
 
 	if (node->mesh > -1)
 	{
@@ -37,7 +35,7 @@ void SkinnedModel::processNode(tinygltf::Node* node, glm::mat4 parentTransform)
 		Bone bone;
 		bone.id = currentNodeId;
 		bone.name = node->name;
-		bone.inverseBindMatrix = getMat4FromFloatPtr(inverseBMPtr);
+		bone.inverseBindMatrix = gltfUtil::getMat4FromFloatPtr(inverseBMPtr);
 		bone.globalTransform = nodeGlobalTransform;
 
 		armature.push_back(bone);
@@ -48,16 +46,4 @@ void SkinnedModel::processNode(tinygltf::Node* node, glm::mat4 parentTransform)
 		currentNodeId = childId;
 		processNode(&loadedModel.nodes[childId], nodeGlobalTransform);
 	});
-}
-
-glm::mat4 getMat4FromFloatPtr(float* ptr)
-{
-	std::vector<float> m;
-	for (size_t i = 0; i < 16; i++)
-		m.push_back(*ptr++);
-
-	return glm::mat4{ m.at(0) , m.at(1) , m.at(2) , m.at(3) ,
-					  m.at(4) , m.at(5) , m.at(6) , m.at(7) ,
-					  m.at(8) , m.at(9) , m.at(10), m.at(11),
-					  m.at(12), m.at(13), m.at(14), m.at(15) };
 }

@@ -4,7 +4,6 @@
 #include <vector>
 #include <algorithm>
 
-#include "tinyGLTF/tiny_gltf.h"
 #include "Mesh.hpp"
 
 class Model
@@ -18,12 +17,10 @@ public:
 
 
 protected:
-	void loadFile(std::string path);
-	void loadTextures();
-	glm::mat4 getTRSMatrix(std::vector<double>* translation, std::vector<double>* rotation, std::vector<double>* scale);
-
 	tinygltf::Model loadedModel;
-	tinygltf::TinyGLTF loader;
+
+	void loadTextures();
+
 
 private:
 	std::vector<Mesh*> meshes;

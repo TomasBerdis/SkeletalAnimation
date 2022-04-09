@@ -16,11 +16,11 @@ Mesh::Mesh(tinygltf::Primitive *primitive, tinygltf::Model *loadedModel, glm::ma
 	int numIndices  = loadedModel->accessors[indicesAccessorId].count;
 
 	// WARNING: Assuming data is stored in buffers sequentally!!! 
-	float *positionsPtr	 = (float *) getDataPtr(nullptr	, positionsAccessorId	, loadedModel);
-	float *normalsPtr	 = (float *) getDataPtr(nullptr, normalsAccessorId		, loadedModel);
-	float *texCoords0Ptr = (float *) getDataPtr(nullptr, texCoords0AccessorId	, loadedModel);
-	float *tangentPtr	 = (float *) getDataPtr(nullptr, tangentAccessorId		, loadedModel);
-	unsigned short *indicesPtr = (unsigned short *)	getDataPtr(nullptr, indicesAccessorId, loadedModel);
+	float *positionsPtr	 = (float *) gltfUtil::getDataPtr(nullptr	, positionsAccessorId	, loadedModel);
+	float *normalsPtr	 = (float *) gltfUtil::getDataPtr(nullptr, normalsAccessorId		, loadedModel);
+	float *texCoords0Ptr = (float *) gltfUtil::getDataPtr(nullptr, texCoords0AccessorId	, loadedModel);
+	float *tangentPtr	 = (float *) gltfUtil::getDataPtr(nullptr, tangentAccessorId		, loadedModel);
+	unsigned short *indicesPtr = (unsigned short *) gltfUtil::getDataPtr(nullptr, indicesAccessorId, loadedModel);
 
 	for (size_t i = 0; i < numVertices; i++)
 	{
@@ -52,49 +52,6 @@ Mesh::Mesh(tinygltf::Primitive *primitive, tinygltf::Model *loadedModel, glm::ma
 
 Mesh::~Mesh()
 {
-}
-
-void * Mesh::getDataPtr(int *bytes, int accessorId, tinygltf::Model *loadedModel)
-{
-	// BufferView
-	const int bufferViewId = loadedModel->accessors[accessorId].bufferView;
-	const tinygltf::BufferView *bufferView = &loadedModel->bufferViews[bufferViewId];
-	const int bufferId   = bufferView->buffer;
-	const int byteLength = bufferView->byteLength;
-	const int byteOffset = bufferView->byteOffset;
-
-	// Buffer
-	const tinygltf::Buffer *buffer = &loadedModel->buffers[bufferId];
-
-	if (bytes != nullptr)
-		*bytes = byteLength;
-
-	return (void *) &buffer->data[byteOffset];
-}
-
-/*
-  Copies bytes given by accessor and returns pointer to that new memory
-*/
-void * Mesh::copyBufferData(int accessorId, tinygltf::Model *loadedModel)
-{
-	// BufferView
-	const int bufferViewId = loadedModel->accessors[accessorId].bufferView;
-	const tinygltf::BufferView *bufferView = &loadedModel->bufferViews[bufferViewId];
-	const int bufferId   = bufferView->buffer;
-	const int byteLength = bufferView->byteLength;
-	const int byteOffset = bufferView->byteOffset;
-
-	// Buffer
-	const tinygltf::Buffer *buffer = &loadedModel->buffers[bufferId];
-
-	// Allocate memory for the new buffer
-	void *dataPtr = (void *) std::malloc(byteLength);
-	assert(dataPtr);
-
-	// Copy data
-	std::memcpy(dataPtr, (const void *) &buffer->data[byteOffset], byteLength);
-
-	return dataPtr;
 }
 
 void Mesh::loadMaterial(tinygltf::Primitive* primitive, tinygltf::Model* loadedModel)
