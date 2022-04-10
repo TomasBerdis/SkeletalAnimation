@@ -9,6 +9,7 @@
 #include "Camera.hpp"
 #include "Model/Model.hpp"
 #include "Model/SkinnedModel.hpp"
+#include "Animation/Animation.hpp"
 
 void initialize();
 void run();

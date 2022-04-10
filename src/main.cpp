@@ -62,6 +62,7 @@ void initialize()
     renderer->setCamera(camera);
 
     model = new SkinnedModel(MODEL_ALEX);
+    Animation* animation = new Animation(ANIMATION_LEG_SWEEP);
 }
 
 void run()
