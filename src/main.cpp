@@ -61,8 +61,9 @@ void initialize()
     Renderer *renderer = Renderer::getInstance();
     renderer->setCamera(camera);
 
-    model = new SkinnedModel(MODEL_ALEX);
-    Animation* animation = new Animation(ANIMATION_LEG_SWEEP);
+    model       = new SkinnedModel(MODEL_ALEX);
+    animation   = new Animation(ANIMATION_LEG_SWEEP);
+    animator    = new Animator((SkinnedModel*) model, animation);
 }
 
 void run()
@@ -185,7 +186,7 @@ void render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // render calls
-    model->render();
+    animator->updateAnimation(0.1f);
 
     SDL_GL_SwapWindow(window);
 }

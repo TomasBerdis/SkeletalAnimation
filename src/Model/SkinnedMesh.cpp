@@ -122,7 +122,7 @@ void SkinnedMesh::render()
 {
 	Renderer* renderer = Renderer::getInstance();
 
-	GLProgram* program = renderer->useProgram(Renderer::Program::MESH);
+	GLProgram* program = renderer->useProgram(Renderer::Program::SKINNED_MESH);
 	program->setUniform("uModelMatrix", globalTransform);
 	program->setUniform("uViewMatrix", renderer->getCamera()->getViewMatrix());
 	program->setUniform("uProjectionMatrix", renderer->getCamera()->getProjectionMatrix());

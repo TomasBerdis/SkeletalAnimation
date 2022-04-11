@@ -4,6 +4,9 @@ Animation::Animation(std::string path)
 {
 	gltfUtil::loadFile(path, &loadedAnimation);
 
+	calculateDuration();
+	calculateTicksPerSecond();
+
 	// Load node heirarchy
 	int startingNodeId = currentId = loadedAnimation.scenes[loadedAnimation.defaultScene].nodes[0];
 	processNode(&loadedAnimation.nodes[startingNodeId], glm::mat4{ 1.0f }, nullptr);
@@ -11,9 +14,39 @@ Animation::Animation(std::string path)
 	// Load keyframe data
 	loadKeyframes();
 }
-
+ 
 Animation::~Animation()
 {
+}
+
+void Animation::calculateDuration()
+{
+	// WARNING: Assuming, that time accesor is at index 0
+	duration = std::ranges::max(loadedAnimation.accessors[0].maxValues);
+}
+
+void Animation::calculateTicksPerSecond()
+{
+	// WARNING: Assuming, that time accesor is at index 0
+	int bytes;
+	float* timePtr = (float*) gltfUtil::getDataPtr(&bytes, 0, &loadedAnimation);
+	int frames = bytes / sizeof(float);
+	ticksPerSecond = frames / duration;
+}
+
+float Animation::getDuration()
+{
+	return duration;
+}
+
+int Animation::getTicksPerSecond()
+{
+	return ticksPerSecond;
+}
+
+unsigned int Animation::getChannelCount()
+{
+	return channels.size();
 }
 
 void Animation::processNode(tinygltf::Node* node, glm::mat4 parentTransform, Channel* parent)
@@ -103,4 +136,27 @@ void Animation::loadKeyframes()
 			channel[0]->setKeyframeScales(keyframeScales);
 		}
 	});
+}
+
+void Animation::calculateBoneTransformations(std::vector<glm::mat4>* boneMatrices, float animationTime,
+	glm::mat4 parentTransform, Channel* node)
+{
+	if (node == nullptr)
+		node = channels[0];
+
+	glm::mat4 globalTransform;
+
+	if (!node->isBone())
+		globalTransform = node->getGlobalTransform();
+	else
+	{
+		globalTransform = parentTransform * node->getFinalTransformation(animationTime);
+		boneMatrices->at(node->getId()) = globalTransform;
+	}
+
+	std::vector<Channel*> children = node->getChildren();
+	for (unsigned int i = 0; i < children.size(); i++)
+	{
+		calculateBoneTransformations(boneMatrices, animationTime, globalTransform, children[i]);
+	}
 }

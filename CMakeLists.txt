@@ -18,6 +18,12 @@ find_file(meshVS meshVS.glsl
 find_file(meshFS meshFS.glsl
     HINTS ${CMAKE_CURRENT_LIST_DIR}/shaders
 )
+find_file(skinnedMeshVS skinnedMeshVS.glsl
+    HINTS ${CMAKE_CURRENT_LIST_DIR}/shaders
+)
+find_file(skinnedMeshFS skinnedMeshFS.glsl
+    HINTS ${CMAKE_CURRENT_LIST_DIR}/shaders
+)
 
 # images
 find_file(debugTexture debugTexture.png
@@ -61,7 +67,9 @@ target_link_libraries(${PROJECT_NAME}
     #${CMAKE_CURRENT_LIST_DIR}/3rd/lib/SDL2/SDL2-staticd.lib
     opengl32.lib
 )
-target_compile_definitions(${PROJECT_NAME} PUBLIC "MESH_VS=\"${meshVS}\"" "MESH_FS=\"${meshFS}\"" "MODEL_ALEX=\"${alex}\"" "MODEL_GASMASK=\"${gasmask}\"" "MODEL_KACHUJIN=\"${kachujin}\"" "MODEL_MAW=\"${maw}\"" "MODEL_NINJA=\"${ninja}\"" "MODEL_PALADIN=\"${paladin}\"" "MODEL_VAMPIRE=\"${vampire}\"" "ANIMATION_LEG_SWEEP=\"${legSweep}\"")
+target_compile_definitions(${PROJECT_NAME} PUBLIC "MESH_VS=\"${meshVS}\"" "MESH_FS=\"${meshFS}\"" "SKINNED_MESH_VS=\"${skinnedMeshVS}\"" "SKINNED_MESH_FS=\"${skinnedMeshFS}\"")
+target_compile_definitions(${PROJECT_NAME} PUBLIC "MODEL_ALEX=\"${alex}\"" "MODEL_GASMASK=\"${gasmask}\"" "MODEL_KACHUJIN=\"${kachujin}\"" "MODEL_MAW=\"${maw}\"" "MODEL_NINJA=\"${ninja}\"" "MODEL_PALADIN=\"${paladin}\"" "MODEL_VAMPIRE=\"${vampire}\"")
+target_compile_definitions(${PROJECT_NAME} PUBLIC "ANIMATION_LEG_SWEEP=\"${legSweep}\"")
 target_compile_definitions(${PROJECT_NAME} PUBLIC "DEBUG_TEXTURE=\"${debugTexture}\"")
 
 SET_PROPERTY(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})

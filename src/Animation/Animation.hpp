@@ -12,6 +12,13 @@ public:
 	Animation(std::string path);
 	~Animation();
 
+	void calculateDuration();
+	void calculateTicksPerSecond();
+
+	float getDuration();
+	int getTicksPerSecond();
+	unsigned int getChannelCount();
+	void calculateBoneTransformations(std::vector<glm::mat4>* boneMatrices, float animationTime, glm::mat4 parentTransform, Channel* node);
 
 private:
 	tinygltf::Model loadedAnimation;

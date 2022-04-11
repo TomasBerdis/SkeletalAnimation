@@ -17,6 +17,14 @@ void SkinnedModel::render()
 	std::ranges::for_each(meshes, [](SkinnedMesh* m) { m->render(); });
 }
 
+glm::mat4 SkinnedModel::getInverseBindMatrix(unsigned int boneId)
+{
+	if (std::ranges::find_if(armature, [&](Bone b) { return b.id == boneId; }) != armature.end())
+		return armature.at(boneId).inverseBindMatrix;
+	else
+		return glm::mat4 { 1.0f };
+}
+
 void SkinnedModel::processNode(tinygltf::Node* node, glm::mat4 parentTransform)
 {
 	glm::mat4 nodeGlobalTransform = parentTransform * gltfUtil::getTRSMatrix(&node->translation, &node->rotation, &node->scale);

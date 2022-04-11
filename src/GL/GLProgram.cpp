@@ -164,3 +164,13 @@ void GLProgram::setUniform(const GLchar* uniformName, glm::ivec4 uniformValue)
 	GLint uniformLocation = glGetUniformLocation(program, uniformName);
 	glProgramUniform4i(program, uniformLocation, uniformValue.x, uniformValue.y, uniformValue.z, uniformValue.w);
 }
+
+void GLProgram::setMatrixArrayUniform(const GLchar* uniformName, std::vector<glm::mat4>* vec)
+{
+	for (size_t i = 0; i < vec->size(); i++)
+	{
+		std::string s = std::string(uniformName) + "[" + std::to_string(i) + "]";
+		GLint uniformLocation = glGetUniformLocation(program, s.c_str());
+		glProgramUniformMatrix4fv(program, uniformLocation, 1, GL_FALSE, glm::value_ptr(vec->at(i)));
+	}
+}

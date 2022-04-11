@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <algorithm>
 
 #include "../GltfUtil.hpp"
 
@@ -29,17 +30,30 @@ public:
 	~Channel();
 
 	void addChild(Channel* child);
+	bool isBone();
+	int getKeyframePositionId(float animationTime);
+	int getKeyframeRotationId(float animationTime);
+	int getKeyframeScaleId(float animationTime);
+	float getScaleFactor(float lastTimeStamp, float nextTimeStamp, float animationTime);
+	glm::mat4 getInterpolatedTranslation	(float animationTime);
+	glm::mat4 getInterpolatedRotation		(float animationTime);
+	glm::mat4 getInterpolatedScale			(float animationTime);
+	glm::mat4 getFinalTransformation		(float animationTime);
+
 	unsigned int getId();
+	glm::mat4 getGlobalTransform();
+	std::vector<Channel*> getChildren();
+
 	void setKeyframePositions(std::vector<KeyframePosition>* keyframePositions);
 	void setKeyframeRotations(std::vector<KeyframeRotation>* keyframeRotations);
 	void setKeyframeScales(std::vector<KeyframeScale>* keyframeScales);
 
 private:
 	std::string name = "";
-	unsigned int id = 0;
+	unsigned int id = -1;
 	glm::mat4 globalTransform;
-	std::vector<KeyframePosition>* keyframePositions;
-	std::vector<KeyframeRotation>* keyframeRotations;
-	std::vector<KeyframeScale>* keyframeScales;
+	std::vector<KeyframePosition>* keyframePositions = nullptr;
+	std::vector<KeyframeRotation>* keyframeRotations = nullptr;
+	std::vector<KeyframeScale>* keyframeScales = nullptr;
 	std::vector<Channel*> children;
 };

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <algorithm>
 
 #include "Model.hpp"
 #include "SkinnedMesh.hpp"
@@ -19,6 +20,7 @@ public:
 	SkinnedModel(std::string path);
 
 	void render();
+	glm::mat4 getInverseBindMatrix(unsigned int boneId);
 
 private:
 	std::vector<SkinnedMesh*> meshes;

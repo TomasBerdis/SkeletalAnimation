@@ -46,6 +46,8 @@ public:
 	void setUniform(const GLchar* uniformName, glm::ivec3 uniformValue);
 	void setUniform(const GLchar* uniformName, glm::ivec4 uniformValue);
 
+	void setMatrixArrayUniform(const GLchar* uniformName, std::vector<glm::mat4>* vec);
+
 
 private:
 	GLuint program;

@@ -10,6 +10,7 @@
 #include "Model/Model.hpp"
 #include "Model/SkinnedModel.hpp"
 #include "Animation/Animation.hpp"
+#include "Animation/Animator.hpp"
 
 void initialize();
 void run();
@@ -27,6 +28,9 @@ SDL_Event event;
 SDL_Window *window;
 Camera *camera;
 Model *model;
+Animation* animation;
+Animator* animator;
+
 
 float mouseLastX = screenWidth / 2.0f;
 float mouseLastY = screenHeight / 2.0f;
