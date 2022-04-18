@@ -4,6 +4,8 @@ Animation::Animation(std::string path)
 {
 	gltfUtil::loadFile(path, &loadedAnimation);
 
+	// WARNING: Assuming a lot of things here
+	timeAccessor = loadedAnimation.animations[0].samplers[0].input;
 	calculateDuration();
 	calculateTicksPerSecond();
 
@@ -13,6 +15,14 @@ Animation::Animation(std::string path)
 
 	// Load keyframe data
 	loadKeyframes();
+
+	//DEBUG
+	/*for (size_t i = 0; i < 1; i++)
+	{
+		Model* debugModel = new Model(MODEL_SPHERE);
+		debugModel->updateProgramType(Renderer::Program::DEBUG);
+		debugModels.push_back(debugModel);
+	}*/
 }
  
 Animation::~Animation()
@@ -21,15 +31,13 @@ Animation::~Animation()
 
 void Animation::calculateDuration()
 {
-	// WARNING: Assuming, that time accesor is at index 0
-	duration = std::ranges::max(loadedAnimation.accessors[0].maxValues);
+	duration = std::ranges::max(loadedAnimation.accessors[timeAccessor].maxValues);
 }
 
 void Animation::calculateTicksPerSecond()
 {
-	// WARNING: Assuming, that time accesor is at index 0
 	int bytes;
-	float* timePtr = (float*) gltfUtil::getDataPtr(&bytes, 0, &loadedAnimation);
+	float* timePtr = (float*) gltfUtil::getDataPtr(&bytes, timeAccessor, &loadedAnimation);
 	int frames = bytes / sizeof(float);
 	ticksPerSecond = frames / duration;
 }
@@ -51,7 +59,7 @@ unsigned int Animation::getChannelCount()
 
 void Animation::processNode(tinygltf::Node* node, glm::mat4 parentTransform, Channel* parent)
 {
-	glm::mat4 nodeGlobalTransform = parentTransform * gltfUtil::getTRSMatrix(&node->translation, &node->rotation, &node->scale);
+	glm::mat4 nodeGlobalTransform = /*parentTransform **/ gltfUtil::getTRSMatrix(&node->translation, &node->rotation, &node->scale);
 
 	Channel* thisNode = new Channel(currentId, node, nodeGlobalTransform);
 	if (parent != nullptr)
@@ -102,15 +110,16 @@ void Animation::loadKeyframes()
 			// calculate how many keyframes to load
 			int count = (bytes / sizeof(float)) / 4;	// number of struct elements = 4
 
+			// Quaternion layout: https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#transformations
 			std::vector<KeyframeRotation>* keyframeRotations = new std::vector<KeyframeRotation>;
 			for (unsigned int i = 0; i < count; i++)
 			{
 				KeyframeRotation rot;
 				rot.timeStamp = *timePtr++;
-				rot.rotation.w = *rotationPtr++;
 				rot.rotation.x = *rotationPtr++;
 				rot.rotation.y = *rotationPtr++;
 				rot.rotation.z = *rotationPtr++;
+				rot.rotation.w = *rotationPtr++;
 				keyframeRotations->push_back(rot);
 			}
 			channel[0]->setKeyframeRotations(keyframeRotations);
@@ -147,16 +156,26 @@ void Animation::calculateBoneTransformations(std::vector<glm::mat4>* boneMatrice
 	glm::mat4 globalTransform;
 
 	if (!node->isBone())
-		globalTransform = node->getGlobalTransform();
+	{
+		globalTransform = parentTransform * node->getLocalTransform();
+		boneMatrices->at(node->getId()) = globalTransform;
+	}
 	else
 	{
 		globalTransform = parentTransform * node->getFinalTransformation(animationTime);
 		boneMatrices->at(node->getId()) = globalTransform;
 	}
 
-	std::vector<Channel*> children = node->getChildren();
-	for (unsigned int i = 0; i < children.size(); i++)
+	//DEBUG
+	/*if (node->getId() == 65)
 	{
-		calculateBoneTransformations(boneMatrices, animationTime, globalTransform, children[i]);
-	}
+		debugModels.at(0)->setModelMatrix(globalTransform);
+		debugModels.at(0)->render();
+		std::cout << node->getName() << std::endl;
+	}*/
+
+	std::ranges::for_each(node->getChildren(), [&](Channel* c)
+	{
+		calculateBoneTransformations(boneMatrices, animationTime, globalTransform, c);
+	});
 }

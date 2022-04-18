@@ -3,7 +3,7 @@
 
 Channel::Channel(int nodeId, tinygltf::Node* node, glm::mat4 parentTransform)
 {
-	globalTransform = parentTransform;
+	localTransform = parentTransform;
 	name = node->name;
 	id = nodeId;
 }
@@ -98,16 +98,22 @@ glm::mat4 Channel::getInterpolatedScale(float animationTime)
 	int nextKeyframeId = lastKeyframeId + 1;
 	float scaleFactor = getScaleFactor(keyframeScales->at(lastKeyframeId).timeStamp,
 									   keyframeScales->at(nextKeyframeId).timeStamp, animationTime);
-	glm::vec3 finalPosition = glm::mix(keyframeScales->at(lastKeyframeId).scale,
+	glm::vec3 finalScale = glm::mix(keyframeScales->at(lastKeyframeId).scale,
 									   keyframeScales->at(nextKeyframeId).scale, scaleFactor);
-	return glm::scale(glm::mat4(1.0f), finalPosition);
+	return glm::scale(glm::mat4(1.0f), finalScale);
 }
 
 glm::mat4 Channel::getFinalTransformation(float animationTime)
 {
-	glm::mat4 translation	= getInterpolatedTranslation(animationTime);
-	glm::mat4 rotation		= getInterpolatedRotation	(animationTime);
-	glm::mat4 scale			= getInterpolatedScale		(animationTime);
+	glm::mat4 translation	= glm::mat4(1.0f);
+	glm::mat4 rotation		= glm::mat4(1.0f);
+	glm::mat4 scale			= glm::mat4(1.0f);
+	if (keyframePositions)
+		translation	= getInterpolatedTranslation(animationTime);
+	if (keyframeRotations)
+		rotation	= getInterpolatedRotation	(animationTime);
+	if (keyframeScales)
+		scale		= getInterpolatedScale		(animationTime);
 	return (translation * rotation * scale);
 }
 
@@ -116,9 +122,14 @@ unsigned int Channel::getId()
 	return id;
 }
 
-glm::mat4 Channel::getGlobalTransform()
+std::string Channel::getName()
 {
-	return globalTransform;
+	return name;
+}
+
+glm::mat4 Channel::getLocalTransform()
+{
+	return localTransform;
 }
 
 std::vector<Channel*> Channel::getChildren()

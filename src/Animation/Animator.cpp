@@ -27,13 +27,21 @@ void Animator::setActor(SkinnedModel* model, Animation* animation)
     animChannelMatrices.resize(animation->getChannelCount(), glm::mat4 { 1.0f });
     finalBoneMatrices.clear();
     finalBoneMatrices.resize(animation->getChannelCount(), glm::mat4 { 1.0f });
+
+    //DEBUG
+    /*for (size_t i = 0; i < animChannelMatrices.size(); i++)
+    {
+        Model* debugModel = new Model(MODEL_SPHERE);
+        debugModel->updateProgramType(Renderer::Program::DEBUG);
+        debugModels.push_back(debugModel);
+    }*/
 }
 
 void Animator::updateAnimation(float deltaTime)
 {
     if (animation)
     {
-        currentTime += ticksPerSecond * deltaTime * 0.001;
+        currentTime += ticksPerSecond * deltaTime * 0.1;
         currentTime = fmod(currentTime, duration);
         animation->calculateBoneTransformations(&animChannelMatrices, currentTime, glm::mat4(1.0f), nullptr);
         
@@ -45,6 +53,15 @@ void Animator::updateAnimation(float deltaTime)
         program->setMatrixArrayUniform("finalBoneMatrices", &finalBoneMatrices);
 
         model->render();
+
+        //DEBUG
+        /*glDisable(GL_DEPTH_TEST);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        int i = 61;
+        debugModels.at(i)->setModelMatrix(animChannelMatrices.at(i));
+        debugModels.at(i)->render();
+        glEnable(GL_DEPTH_TEST);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);*/
     }
 }
 

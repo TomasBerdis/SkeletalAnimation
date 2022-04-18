@@ -3,6 +3,7 @@
 
 Mesh::Mesh(tinygltf::Primitive *primitive, tinygltf::Model *loadedModel, glm::mat4 globalTransform)
 {
+	this->programType = Renderer::Program::MESH;
 	this->globalTransform = globalTransform;
 
 	// Accessors
@@ -56,7 +57,14 @@ Mesh::~Mesh()
 
 void Mesh::loadMaterial(tinygltf::Primitive* primitive, tinygltf::Model* loadedModel)
 {
-	tinygltf::Material* m = &loadedModel->materials[primitive->material];
+	tinygltf::Material* m;
+	if (!loadedModel->materials.empty())
+		m = &loadedModel->materials[primitive->material];
+	else
+	{
+		material.colorTexture = Renderer::debugTexture;
+		return;
+	}
 
 	int colorTextureId = m->pbrMetallicRoughness.baseColorTexture.index;
 	if (colorTextureId > -1)
@@ -120,7 +128,7 @@ void Mesh::render()
 {
 	Renderer* renderer = Renderer::getInstance();
 
-	GLProgram* program = renderer->useProgram(Renderer::Program::MESH);
+	GLProgram* program = renderer->useProgram(programType);
 	program->setUniform("uModelMatrix", globalTransform);
 	program->setUniform("uViewMatrix", renderer->getCamera()->getViewMatrix());
 	program->setUniform("uProjectionMatrix", renderer->getCamera()->getProjectionMatrix());
@@ -145,4 +153,14 @@ void Mesh::render()
 	glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, 0);
 	glBindVertexArray(0);
+}
+
+void Mesh::updateGlobalTransform(glm::mat4 matrix)
+{
+	globalTransform = matrix;
+}
+
+void Mesh::updateProgramType(Renderer::Program programType)
+{
+	this->programType = programType;
 }

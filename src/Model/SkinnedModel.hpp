@@ -22,13 +22,14 @@ public:
 	void render();
 	glm::mat4 getInverseBindMatrix(unsigned int boneId);
 
+
 private:
 	std::vector<SkinnedMesh*> meshes;
 	std::vector<Bone> armature;
 	int startingNodeId = -1;
 	int currentNodeId = -1;
-	int inverseBMAccessorId = -1;
-	float* inverseBMPtr;
+	std::vector<glm::mat4> inverseBindMatrices;
 
+	void loadInverseBindMatrices();
 	void processNode(tinygltf::Node* node, glm::mat4 parentTransform);
 };

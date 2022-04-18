@@ -57,6 +57,9 @@ void Renderer::createProgram(Program programId)
 		case Renderer::Program::SKINNED_MESH:
 			program = new GLProgram({ SKINNED_MESH_VS, SKINNED_MESH_FS });
 			break;
+		case Renderer::Program::DEBUG:
+			program = new GLProgram({ DEBUG_VS, DEBUG_FS });
+			break;
 		default:
 			std::cerr << "Renderer: Cannot create unexisting program" << std::endl;
 	}

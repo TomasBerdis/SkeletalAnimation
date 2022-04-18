@@ -40,3 +40,43 @@ void Model::render()
 {
 	std::ranges::for_each(meshes, [](Mesh* m) { m->render(); });
 }
+
+void Model::translate(glm::vec3 translation)
+{
+	modelMatrix = glm::translate(modelMatrix, translation);
+	updateMeshTransforms();
+}
+
+void Model::rotate(glm::quat rotation)
+{
+	modelMatrix *= glm::mat4_cast(rotation);
+	updateMeshTransforms();
+}
+
+void Model::scale(glm::vec3 scale)
+{
+	modelMatrix = glm::scale(modelMatrix, scale);
+	updateMeshTransforms();
+}
+
+void Model::resetModelMatrix()
+{
+	modelMatrix = glm::mat4{ 1.0f };
+	updateMeshTransforms();
+}
+
+void Model::setModelMatrix(glm::mat4 matrix)
+{
+	modelMatrix = matrix;
+	updateMeshTransforms();
+}
+
+void Model::updateMeshTransforms()
+{
+	std::ranges::for_each(meshes, [&](Mesh* m) { m->updateGlobalTransform(modelMatrix); });
+}
+
+void Model::updateProgramType(Renderer::Program programType)
+{
+	std::ranges::for_each(meshes, [&](Mesh* m) { m->updateProgramType(programType); });
+}

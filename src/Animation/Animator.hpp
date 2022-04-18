@@ -22,6 +22,7 @@ private:
 	int ticksPerSecond	 = 0;
 	std::vector<glm::mat4> animChannelMatrices;
 	std::vector<glm::mat4> finalBoneMatrices;
+	std::vector<Model*> debugModels;
 
 	bool checkCompatibility();
 };

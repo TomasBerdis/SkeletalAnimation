@@ -25,9 +25,10 @@ bool quit = false;
 int screenWidth = 1280;
 int screenHeight = 768;
 SDL_Event event;
-SDL_Window *window;
-Camera *camera;
-Model *model;
+SDL_Window* window;
+Camera* camera;
+Model* model;
+Model* debugModel;
 Animation* animation;
 Animator* animator;
 

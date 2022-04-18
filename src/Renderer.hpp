@@ -24,7 +24,7 @@ class Renderer
 public:
 	enum class Program
 	{
-		MESH, SKINNED_MESH
+		MESH, SKINNED_MESH, DEBUG
 	};
 	static const std::string debugTexture;
 

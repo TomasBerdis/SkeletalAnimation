@@ -41,7 +41,8 @@ public:
 	glm::mat4 getFinalTransformation		(float animationTime);
 
 	unsigned int getId();
-	glm::mat4 getGlobalTransform();
+	std::string getName();
+	glm::mat4 getLocalTransform();
 	std::vector<Channel*> getChildren();
 
 	void setKeyframePositions(std::vector<KeyframePosition>* keyframePositions);
@@ -51,7 +52,7 @@ public:
 private:
 	std::string name = "";
 	unsigned int id = -1;
-	glm::mat4 globalTransform;
+	glm::mat4 localTransform;
 	std::vector<KeyframePosition>* keyframePositions = nullptr;
 	std::vector<KeyframeRotation>* keyframeRotations = nullptr;
 	std::vector<KeyframeScale>* keyframeScales = nullptr;

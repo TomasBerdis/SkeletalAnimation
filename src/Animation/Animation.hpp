@@ -2,6 +2,7 @@
 
 #include "../GltfUtil.hpp"
 #include "Channel.hpp"
+/*DEBUG*/ #include "../Model/Model.hpp"
 
 #include <string>
 #include <algorithm>
@@ -26,6 +27,8 @@ private:
 	int ticksPerSecond = 0;
 	std::vector<Channel*> channels;
 	int currentId = -1;
+	int timeAccessor = -1;
+	/*DEBUG*/ std::vector<Model*> debugModels;
 
 	void processNode(tinygltf::Node* node, glm::mat4 parentTransform, Channel* parent);
 	void loadKeyframes();

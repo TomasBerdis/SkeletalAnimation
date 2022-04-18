@@ -61,9 +61,13 @@ void initialize()
     Renderer *renderer = Renderer::getInstance();
     renderer->setCamera(camera);
 
-    model       = new SkinnedModel(MODEL_ALEX);
-    animation   = new Animation(ANIMATION_LEG_SWEEP);
+    model       = new SkinnedModel(MODEL_WHALE);
+    debugModel  = new Model(MODEL_ALEX);
+    animation   = new Animation(MODEL_WHALE);
     animator    = new Animator((SkinnedModel*) model, animation);
+    /*debugModel  = new Model(MODEL_SPHERE);
+    debugModel->scale({0.01f, 0.01f, 0.01f});
+    debugModel->updateProgramType(Renderer::Program::DEBUG);*/
 }
 
 void run()
@@ -182,10 +186,11 @@ void simulate()
 
 void render()
 {
-    glClearColor(1.0f, 1.0f, 0.5f, 0.0f);
+    glClearColor(0.0f, 1.0f, 0.5f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // render calls
+    //debugModel->render();
     animator->updateAnimation(0.1f);
 
     SDL_GL_SwapWindow(window);

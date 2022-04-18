@@ -2,6 +2,7 @@
 
 SkinnedMesh::SkinnedMesh(tinygltf::Primitive* primitive, tinygltf::Model* loadedModel, glm::mat4 globalTransform)
 {
+	this->programType = Renderer::Program::SKINNED_MESH;
 	this->globalTransform = globalTransform;
 
 	// Accessors

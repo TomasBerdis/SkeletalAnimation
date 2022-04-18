@@ -26,10 +26,13 @@ public:
 	~Mesh();
 
 	void virtual render();
+	void updateGlobalTransform(glm::mat4 matrix);
+	void updateProgramType(Renderer::Program programType);
 
 protected:
 	std::vector<unsigned short> indices;
 	glm::mat4 globalTransform;
+	Renderer::Program programType;
 	Material material;
 	GLuint vao, vbo, ebo;
 	struct Vertex
