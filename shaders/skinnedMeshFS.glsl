@@ -8,6 +8,7 @@ in vec3 vFragPos;
 in vec3 vTangentLightPos;
 in vec3 vTangentCameraPos;
 in vec3 vTangentFragPos;
+/*DEBUG*/ in float debugWeight;
 
 uniform sampler2D diffuseMap;
 uniform sampler2D normalMap;
@@ -51,4 +52,5 @@ void main()
     // Phong
     // vec3 result = (ambient + diffuse + specular) * vec3(colorSample);
     color = vec4(ambient + diffuse + specular, 1.0f);
+    /*DEBUG*/ //color = vec4(debugWeight, 0.0f, 0.0f, 1.0f);
 }

@@ -3,6 +3,7 @@
 Animation::Animation(std::string path)
 {
 	gltfUtil::loadFile(path, &loadedAnimation);
+	name = loadedAnimation.animations[0].name;
 
 	// WARNING: Assuming a lot of things here
 	timeAccessor = loadedAnimation.animations[0].samplers[0].input;
@@ -55,6 +56,14 @@ int Animation::getTicksPerSecond()
 unsigned int Animation::getChannelCount()
 {
 	return channels.size();
+}
+
+int Animation::getChannelIdByName(std::string name)
+{
+	if (auto result = std::ranges::find_if(channels, [&](Channel* ch) { return ch->getName() == name; }); result != channels.end())
+		return result[0]->getId();
+	else
+		return -1;
 }
 
 void Animation::processNode(tinygltf::Node* node, glm::mat4 parentTransform, Channel* parent)
@@ -158,11 +167,13 @@ void Animation::calculateBoneTransformations(std::vector<glm::mat4>* boneMatrice
 	if (!node->isBone())
 	{
 		globalTransform = parentTransform * node->getLocalTransform();
-		boneMatrices->at(node->getId()) = globalTransform;
+		//boneMatrices->at(node->getId()) = globalTransform;
 	}
 	else
 	{
-		globalTransform = parentTransform * node->getFinalTransformation(animationTime);
+		glm::mat4 local = node->getLocalTransform();
+		glm::mat4 final = node->getFinalTransformation(animationTime);
+		globalTransform = (parentTransform * local) * final;
 		boneMatrices->at(node->getId()) = globalTransform;
 	}
 

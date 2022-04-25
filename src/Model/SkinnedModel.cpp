@@ -8,7 +8,7 @@ SkinnedModel::SkinnedModel(std::string path)
 	startingNodeId = currentNodeId = loadedModel.scenes[loadedModel.defaultScene].nodes[0];
 	assert(!loadedModel.skins.empty());
 
-	loadInverseBindMatrices();
+	loadArmature();
 	processNode(&loadedModel.nodes[startingNodeId], glm::mat4{ 1.0f });
 }
 
@@ -17,22 +17,24 @@ void SkinnedModel::render()
 	std::ranges::for_each(meshes, [](SkinnedMesh* m) { m->render(); });
 }
 
-glm::mat4 SkinnedModel::getInverseBindMatrix(unsigned int boneId)
+std::vector<Bone>* SkinnedModel::getArmature()
 {
-	if (auto result = std::ranges::find_if(armature, [&](Bone b) { return b.id == boneId; }); result != armature.end())
-		return result[0].inverseBindMatrix;
-	else
-		return glm::mat4 { 1.0f };
+	return &armature;
 }
 
-void SkinnedModel::loadInverseBindMatrices()
+void SkinnedModel::loadArmature()
 {
 	int inverseBMAccessorId = loadedModel.skins[0].inverseBindMatrices;
 	float* inverseBMPtr = (float*) gltfUtil::getDataPtr(nullptr, inverseBMAccessorId, &loadedModel);
-	for (size_t i = 0; i < loadedModel.accessors[inverseBMAccessorId].count; i++)
+
+	for (size_t i = 0; i < loadedModel.skins[0].joints.size(); i++)
 	{
-		inverseBindMatrices.push_back(gltfUtil::getMat4FromFloatPtr(inverseBMPtr));
+		int nodeId = loadedModel.skins[0].joints[i];
+		Bone b;
+		b.name = loadedModel.nodes[nodeId].name;
+		b.inverseBindMatrix = gltfUtil::getMat4FromFloatPtr(inverseBMPtr);
 		inverseBMPtr += 16;
+		armature.push_back(b);
 	}
 }
 
@@ -47,19 +49,6 @@ void SkinnedModel::processNode(tinygltf::Node* node, glm::mat4 parentTransform)
 			SkinnedMesh* mesh = new SkinnedMesh(&primitive, &loadedModel, nodeGlobalTransform);
 			meshes.push_back(mesh);
 		});
-	}
-
-	if (auto result = std::ranges::find_if(loadedModel.skins[0].joints, [&](int i) { return i == currentNodeId; });
-		result != loadedModel.skins[0].joints.end())
-	{
-		int indexInJoints = std::distance(std::begin(loadedModel.skins[0].joints), result);
-		Bone bone;
-		bone.id = currentNodeId;
-		bone.name = node->name;
-		bone.inverseBindMatrix = inverseBindMatrices[indexInJoints];
-		bone.globalTransform = nodeGlobalTransform;
-
-		armature.push_back(bone);
 	}
 
 	std::ranges::for_each(node->children, [&](int childId)

@@ -52,6 +52,8 @@ void initialize()
     }
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Camera
     camera = new Camera(glm::vec3(0.0f, 2.0f, 3.0f), 45, (float) screenWidth / (float) screenHeight, 0.1f, 1000.0f);
@@ -62,12 +64,12 @@ void initialize()
     renderer->setCamera(camera);
 
     model       = new SkinnedModel(MODEL_WHALE);
-    debugModel  = new Model(MODEL_ALEX);
+    debugModel  = new Model(MODEL_PLANE);
+    debugModel->scale({ 5.f, 5.f, 5.f });
+    debugModel->rotate(glm::quat(0.7071f, 0.7071f, 0.0f, 0.0f));
+    debugModel->updateProgramType(Renderer::Program::DEBUG);
     animation   = new Animation(MODEL_WHALE);
     animator    = new Animator((SkinnedModel*) model, animation);
-    /*debugModel  = new Model(MODEL_SPHERE);
-    debugModel->scale({0.01f, 0.01f, 0.01f});
-    debugModel->updateProgramType(Renderer::Program::DEBUG);*/
 }
 
 void run()
@@ -75,9 +77,14 @@ void run()
     // Game loop
     while (!quit)
     {
+        uint32_t startTime = SDL_GetTicks();
+
         processInput();
         simulate();
         render();
+
+        uint32_t currTime = SDL_GetTicks();
+        lastFrameDurationInSec = (currTime - startTime) / 1000.0f;
     }
 }
 
@@ -186,12 +193,14 @@ void simulate()
 
 void render()
 {
-    glClearColor(0.0f, 1.0f, 0.5f, 0.0f);
+    glClearColor(0.0f, 0.5f, 0.5f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // render calls
-    //debugModel->render();
-    animator->updateAnimation(0.1f);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    animator->updateAnimation(lastFrameDurationInSec);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    debugModel->render();
 
     SDL_GL_SwapWindow(window);
 }

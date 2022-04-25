@@ -18,7 +18,8 @@ void Animator::setActor(SkinnedModel* model, Animation* animation)
 {
 	this->model = model;
 	this->animation = animation;
-    checkCompatibility();
+    if (checkCompatibility() != true)
+        std::cerr << "Animator: Model and animation are incompatible. Please check bone names." << std::endl;
 
     duration = animation->getDuration();
     ticksPerSecond = animation->getTicksPerSecond();
@@ -26,7 +27,7 @@ void Animator::setActor(SkinnedModel* model, Animation* animation)
     animChannelMatrices.clear();
     animChannelMatrices.resize(animation->getChannelCount(), glm::mat4 { 1.0f });
     finalBoneMatrices.clear();
-    finalBoneMatrices.resize(animation->getChannelCount(), glm::mat4 { 1.0f });
+    finalBoneMatrices.resize(armatureToAnimationMap.size(), glm::mat4{1.0f});
 
     //DEBUG
     /*for (size_t i = 0; i < animChannelMatrices.size(); i++)
@@ -41,12 +42,16 @@ void Animator::updateAnimation(float deltaTime)
 {
     if (animation)
     {
-        currentTime += ticksPerSecond * deltaTime * 0.1;
+        currentTime += deltaTime;
         currentTime = fmod(currentTime, duration);
         animation->calculateBoneTransformations(&animChannelMatrices, currentTime, glm::mat4(1.0f), nullptr);
         
-        for (size_t i = 0; i < animChannelMatrices.size(); i++)
-            finalBoneMatrices.at(i) = animChannelMatrices.at(i) * model->getInverseBindMatrix(i);
+        for (size_t i = 0; i < finalBoneMatrices.size(); i++)
+        {
+            int animChannelId = armatureToAnimationMap[i];
+            glm::mat4 ibm = model->getArmature()->at(i).inverseBindMatrix;
+            finalBoneMatrices.at(i) = animChannelMatrices.at(animChannelId) * ibm;
+        }
 
         Renderer* renderer = Renderer::getInstance();
         GLProgram* program = renderer->useProgram(Renderer::Program::SKINNED_MESH);
@@ -68,5 +73,13 @@ void Animator::updateAnimation(float deltaTime)
 /* Checks if model and animation have the same armature. */
 bool Animator::checkCompatibility()
 {
+    std::vector<Bone>* armature = model->getArmature();
+    for (int i = 0; i < armature->size(); i++)
+    {
+        int id = animation->getChannelIdByName(armature->at(i).name);
+        if (id == -1)
+            return false;
+        armatureToAnimationMap[i] = id;
+    }
     return true;
 }

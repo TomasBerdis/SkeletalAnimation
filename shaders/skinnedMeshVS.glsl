@@ -26,6 +26,7 @@ out vec3 vFragPos;
 out vec3 vTangentLightPos;
 out vec3 vTangentCameraPos;
 out vec3 vTangentFragPos;
+/*DEBUG*/ out float debugWeight;
 
 void main()
 {
@@ -33,19 +34,23 @@ void main()
     vTexCoords = texCoords;
     vNormal = normal;
 
-    // mat4 skinMat =
-    //     boneWeights.x * finalBoneMatrices[boneIds.x] +
-    //     boneWeights.y * finalBoneMatrices[boneIds.y] +
-    //     boneWeights.z * finalBoneMatrices[boneIds.z] +
-    //     boneWeights.w * finalBoneMatrices[boneIds.w];
-    mat4 skinMat = mat4(1.0f);
-    for (int i = 0; i < MAX_BONE_INFLUENCE; i++)
-    {
-        if (boneWeights[i] < 0.01f) 
-            continue;
-        skinMat += finalBoneMatrices[boneIds[i]] * boneWeights[i];
-    }
+    mat4 skinMat =
+        boneWeights.x * finalBoneMatrices[boneIds.x] +
+        boneWeights.y * finalBoneMatrices[boneIds.y] +
+        boneWeights.z * finalBoneMatrices[boneIds.z] +
+        boneWeights.w * finalBoneMatrices[boneIds.w];
     vec4 totalPosition = skinMat * vec4(position, 1.0f);
+
+    //DEBUG
+    debugWeight = 0.0f;
+    if (boneWeights.x > 0.01 && boneIds.x == 0)
+        debugWeight = boneWeights.x;
+    if (boneWeights.y > 0.01 && boneIds.y == 0)
+        debugWeight = boneWeights.y;
+    if (boneWeights.z > 0.01 && boneIds.z == 0)
+        debugWeight = boneWeights.z;
+    if (boneWeights.w > 0.01 && boneIds.w == 0)
+        debugWeight = boneWeights.w;
     
     vec3 T = normalize(uNormalMatrix * tangent.xyz);
     vec3 N = normalize(uNormalMatrix * normal);
