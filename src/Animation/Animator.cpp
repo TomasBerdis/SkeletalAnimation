@@ -19,23 +19,15 @@ void Animator::setActor(SkinnedModel* model, Animation* animation)
 	this->model = model;
 	this->animation = animation;
     if (checkCompatibility() != true)
-        std::cerr << "Animator: Model and animation are incompatible. Please check bone names." << std::endl;
+        std::cerr << "ERROR: Animator: Model and animation are incompatible. Please check bone names." << std::endl;
 
     duration = animation->getDuration();
     ticksPerSecond = animation->getTicksPerSecond();
 
     animChannelMatrices.clear();
-    animChannelMatrices.resize(animation->getChannelCount(), glm::mat4 { 1.0f });
+    animChannelMatrices.resize(animation->getChannelCount(), glm::mat4(1.0f));
     finalBoneMatrices.clear();
-    finalBoneMatrices.resize(armatureToAnimationMap.size(), glm::mat4{1.0f});
-
-    //DEBUG
-    /*for (size_t i = 0; i < animChannelMatrices.size(); i++)
-    {
-        Model* debugModel = new Model(MODEL_SPHERE);
-        debugModel->updateProgramType(Renderer::Program::DEBUG);
-        debugModels.push_back(debugModel);
-    }*/
+    finalBoneMatrices.resize(armatureToAnimationMap.size(), glm::mat4(1.0f));
 }
 
 void Animator::updateAnimation(float deltaTime)
@@ -58,15 +50,6 @@ void Animator::updateAnimation(float deltaTime)
         program->setMatrixArrayUniform("finalBoneMatrices", &finalBoneMatrices);
 
         model->render();
-
-        //DEBUG
-        /*glDisable(GL_DEPTH_TEST);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        int i = 61;
-        debugModels.at(i)->setModelMatrix(animChannelMatrices.at(i));
-        debugModels.at(i)->render();
-        glEnable(GL_DEPTH_TEST);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);*/
     }
 }
 

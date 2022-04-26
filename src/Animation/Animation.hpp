@@ -32,6 +32,6 @@ private:
 	int timeAccessor = -1;
 	/*DEBUG*/ std::vector<Model*> debugModels;
 
-	void processNode(tinygltf::Node* node, glm::mat4 parentTransform, Channel* parent);
+	void processNode(tinygltf::Node* node, Channel* parent);
 	void loadKeyframes();
 };

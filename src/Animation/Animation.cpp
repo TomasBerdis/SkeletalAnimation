@@ -12,18 +12,10 @@ Animation::Animation(std::string path)
 
 	// Load node heirarchy
 	int startingNodeId = currentId = loadedAnimation.scenes[loadedAnimation.defaultScene].nodes[0];
-	processNode(&loadedAnimation.nodes[startingNodeId], glm::mat4{ 1.0f }, nullptr);
+	processNode(&loadedAnimation.nodes[startingNodeId], nullptr);
 
 	// Load keyframe data
 	loadKeyframes();
-
-	//DEBUG
-	/*for (size_t i = 0; i < 1; i++)
-	{
-		Model* debugModel = new Model(MODEL_SPHERE);
-		debugModel->updateProgramType(Renderer::Program::DEBUG);
-		debugModels.push_back(debugModel);
-	}*/
 }
  
 Animation::~Animation()
@@ -66,11 +58,9 @@ int Animation::getChannelIdByName(std::string name)
 		return -1;
 }
 
-void Animation::processNode(tinygltf::Node* node, glm::mat4 parentTransform, Channel* parent)
+void Animation::processNode(tinygltf::Node* node, Channel* parent)
 {
-	glm::mat4 nodeGlobalTransform = /*parentTransform **/ gltfUtil::getTRSMatrix(&node->translation, &node->rotation, &node->scale);
-
-	Channel* thisNode = new Channel(currentId, node, nodeGlobalTransform);
+	Channel* thisNode = new Channel(currentId, node);
 	if (parent != nullptr)
 		parent->addChild(thisNode);
 	channels.push_back(thisNode);
@@ -78,7 +68,7 @@ void Animation::processNode(tinygltf::Node* node, glm::mat4 parentTransform, Cha
 	std::ranges::for_each(node->children, [&](int i)
 	{
 		currentId = i;
-		processNode(&loadedAnimation.nodes[i], nodeGlobalTransform, thisNode);
+		processNode(&loadedAnimation.nodes[i], thisNode);
 	});
 }
 
@@ -165,25 +155,14 @@ void Animation::calculateBoneTransformations(std::vector<glm::mat4>* boneMatrice
 	glm::mat4 globalTransform;
 
 	if (!node->isBone())
-	{
 		globalTransform = parentTransform * node->getLocalTransform();
-		//boneMatrices->at(node->getId()) = globalTransform;
-	}
 	else
 	{
 		glm::mat4 local = node->getLocalTransform();
 		glm::mat4 final = node->getFinalTransformation(animationTime);
-		globalTransform = (parentTransform * local) * final;
+		globalTransform = (parentTransform /** local*/) * final;
 		boneMatrices->at(node->getId()) = globalTransform;
 	}
-
-	//DEBUG
-	/*if (node->getId() == 65)
-	{
-		debugModels.at(0)->setModelMatrix(globalTransform);
-		debugModels.at(0)->render();
-		std::cout << node->getName() << std::endl;
-	}*/
 
 	std::ranges::for_each(node->getChildren(), [&](Channel* c)
 	{

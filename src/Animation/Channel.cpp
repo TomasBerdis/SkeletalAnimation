@@ -1,9 +1,9 @@
 #include "Channel.hpp"
 
 
-Channel::Channel(int nodeId, tinygltf::Node* node, glm::mat4 parentTransform)
+Channel::Channel(int nodeId, tinygltf::Node* node)
 {
-	localTransform = parentTransform;
+	localTransform = gltfUtil::getTRSMatrix(&node->translation, &node->rotation, &node->scale);
 	name = node->name;
 	id = nodeId;
 }

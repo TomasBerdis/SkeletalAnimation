@@ -14,13 +14,12 @@ uniform mat3 uNormalMatrix;
 uniform vec3 uCameraPos;
 uniform vec3 uLightPos;
 
-const int MAX_BONES = 100;
+const int MAX_BONES = 100;  //TODO: Fix by SSBO
 const int MAX_BONE_INFLUENCE = 4;
 uniform mat4 finalBoneMatrices[MAX_BONES];
 
 out vec3 vNormal;
 out vec3 vTangent;
-out vec3 vBitangent;
 out vec2 vTexCoords;
 out vec3 vFragPos;
 out vec3 vTangentLightPos;
@@ -30,10 +29,6 @@ out vec3 vTangentFragPos;
 
 void main()
 {
-    vFragPos = vec3(uModelMatrix * vec4(position, 1.0f));
-    vTexCoords = texCoords;
-    vNormal = normal;
-
     mat4 skinMat =
         boneWeights.x * finalBoneMatrices[boneIds.x] +
         boneWeights.y * finalBoneMatrices[boneIds.y] +
@@ -42,18 +37,23 @@ void main()
     vec4 totalPosition = skinMat * vec4(position, 1.0f);
 
     //DEBUG
-    debugWeight = 0.0f;
-    if (boneWeights.x > 0.01 && boneIds.x == 0)
-        debugWeight = boneWeights.x;
-    if (boneWeights.y > 0.01 && boneIds.y == 0)
-        debugWeight = boneWeights.y;
-    if (boneWeights.z > 0.01 && boneIds.z == 0)
-        debugWeight = boneWeights.z;
-    if (boneWeights.w > 0.01 && boneIds.w == 0)
-        debugWeight = boneWeights.w;
+    // debugWeight = 0.0f;
+    // if (boneWeights.x > 0.01 && boneIds.x == 0)
+    //     debugWeight = boneWeights.x;
+    // if (boneWeights.y > 0.01 && boneIds.y == 0)
+    //     debugWeight = boneWeights.y;
+    // if (boneWeights.z > 0.01 && boneIds.z == 0)
+    //     debugWeight = boneWeights.z;
+    // if (boneWeights.w > 0.01 && boneIds.w == 0)
+    //     debugWeight = boneWeights.w;
     
-    vec3 T = normalize(uNormalMatrix * tangent.xyz);
-    vec3 N = normalize(uNormalMatrix * normal);
+    vFragPos = vec3(uModelMatrix * totalPosition);
+    vTexCoords = texCoords;
+    vNormal = vec3(skinMat * vec4(normal, 1.0f));
+    vec3 _tangent = vec3(skinMat * vec4(tangent.xyz, 1.0f));
+    
+    vec3 T = normalize(uNormalMatrix * _tangent);
+    vec3 N = normalize(uNormalMatrix * vNormal);
     T = normalize(T - dot(T, N) * N);
     vec3 B = cross(N, T) * tangent.w;
 

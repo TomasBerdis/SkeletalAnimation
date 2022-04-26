@@ -26,7 +26,6 @@ private:
 	std::vector<Bone> armature;
 	int startingNodeId = -1;
 	int currentNodeId = -1;
-	std::vector<glm::mat4> inverseBindMatrices;
 
 	void loadArmature();
 	void processNode(tinygltf::Node* node, glm::mat4 parentTransform);

@@ -2,7 +2,6 @@
 
 in vec3 vNormal;
 in vec3 vTangent;
-in vec3 vBitangent;
 in vec2 vTexCoords;
 in vec3 vFragPos;
 in vec3 vTangentLightPos;
