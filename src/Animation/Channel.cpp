@@ -29,7 +29,7 @@ void Channel::addChild(Channel* child)
 	children.push_back(child);
 }
 
-bool Channel::isBone()
+bool Channel::isAnimated()
 {
 	bool empty = keyframePositions == nullptr && keyframeRotations == nullptr && keyframeScales == nullptr;
 	return !empty;

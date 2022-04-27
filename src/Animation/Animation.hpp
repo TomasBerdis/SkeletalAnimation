@@ -18,6 +18,8 @@ public:
 
 	float getDuration();
 	int getTicksPerSecond();
+	Channel* getChannel(int id);
+	Channel* getChannelById(int id);
 	unsigned int getChannelCount();
 	int getChannelIdByName(std::string name);
 	void calculateBoneTransformations(std::vector<glm::mat4>* boneMatrices, float animationTime, glm::mat4 parentTransform, Channel* node);

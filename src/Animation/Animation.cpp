@@ -45,6 +45,19 @@ int Animation::getTicksPerSecond()
 	return ticksPerSecond;
 }
 
+Channel* Animation::getChannel(int id)
+{
+	return channels[id];
+}
+
+Channel* Animation::getChannelById(int id)
+{
+	if (auto result = std::ranges::find_if(channels, [&](Channel* ch) { return ch->getId() == id; }); result != channels.end())
+		return result[0];
+	else
+		return nullptr;
+}
+
 unsigned int Animation::getChannelCount()
 {
 	return channels.size();
@@ -154,15 +167,12 @@ void Animation::calculateBoneTransformations(std::vector<glm::mat4>* boneMatrice
 
 	glm::mat4 globalTransform;
 
-	if (!node->isBone())
+	if (!node->isAnimated())
 		globalTransform = parentTransform * node->getLocalTransform();
 	else
-	{
-		glm::mat4 local = node->getLocalTransform();
-		glm::mat4 final = node->getFinalTransformation(animationTime);
-		globalTransform = (parentTransform /** local*/) * final;
-		boneMatrices->at(node->getId()) = globalTransform;
-	}
+		globalTransform = parentTransform * node->getFinalTransformation(animationTime);
+
+	boneMatrices->at(node->getId()) = globalTransform;
 
 	std::ranges::for_each(node->getChildren(), [&](Channel* c)
 	{

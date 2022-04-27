@@ -48,8 +48,6 @@ void Animator::updateAnimation(float deltaTime)
         Renderer* renderer = Renderer::getInstance();
         GLProgram* program = renderer->useProgram(Renderer::Program::SKINNED_MESH);
         program->setMatrixArrayUniform("finalBoneMatrices", &finalBoneMatrices);
-
-        model->render();
     }
 }
 

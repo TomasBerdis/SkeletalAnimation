@@ -30,7 +30,7 @@ public:
 	~Channel();
 
 	void addChild(Channel* child);
-	bool isBone();
+	bool isAnimated();
 	int getKeyframePositionId(float animationTime);
 	int getKeyframeRotationId(float animationTime);
 	int getKeyframeScaleId(float animationTime);

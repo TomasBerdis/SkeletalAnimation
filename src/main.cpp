@@ -68,8 +68,8 @@ void initialize()
     groundPlane->rotate(glm::quat(0.7071f, 0.7071f, 0.0f, 0.0f));
     groundPlane->updateProgramType(Renderer::Program::DEBUG);
 
-    model       = new SkinnedModel(MODEL_WHALE);
-    animation   = new Animation(MODEL_WHALE);
+    model       = new SkinnedModel(MODEL_ALEX);
+    animation   = new Animation(ANIMATION_DYING);
     animator    = new Animator((SkinnedModel*) model, animation);
 }
 
@@ -189,7 +189,8 @@ void processInput()
 
 void simulate()
 {
-
+    // animation updates
+    animator->updateAnimation(lastFrameDurationInSec);
 }
 
 void render()
@@ -198,9 +199,7 @@ void render()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // render calls
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    animator->updateAnimation(lastFrameDurationInSec);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    model->render();
     groundPlane->render();
 
     SDL_GL_SwapWindow(window);
