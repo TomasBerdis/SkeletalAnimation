@@ -30,7 +30,6 @@ private:
 	std::vector<Channel*> channels;
 	int currentId = -1;
 	int timeAccessor = -1;
-	/*DEBUG*/ std::vector<Model*> debugModels;
 
 	void processNode(tinygltf::Node* node, Channel* parent);
 	void loadKeyframes();

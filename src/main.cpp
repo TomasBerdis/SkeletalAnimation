@@ -63,12 +63,13 @@ void initialize()
     Renderer *renderer = Renderer::getInstance();
     renderer->setCamera(camera);
 
-    model       = new SkinnedModel(MODEL_ALEX);
-    debugModel  = new Model(MODEL_PLANE);
-    debugModel->scale({ 5.f, 5.f, 5.f });
-    debugModel->rotate(glm::quat(0.7071f, 0.7071f, 0.0f, 0.0f));
-    debugModel->updateProgramType(Renderer::Program::DEBUG);
-    animation   = new Animation(MODEL_ALEX);
+    groundPlane  = new Model(MODEL_PLANE);
+    groundPlane->scale({ 5.f, 5.f, 5.f });
+    groundPlane->rotate(glm::quat(0.7071f, 0.7071f, 0.0f, 0.0f));
+    groundPlane->updateProgramType(Renderer::Program::DEBUG);
+
+    model       = new SkinnedModel(MODEL_WHALE);
+    animation   = new Animation(MODEL_WHALE);
     animator    = new Animator((SkinnedModel*) model, animation);
 }
 
@@ -200,7 +201,7 @@ void render()
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     animator->updateAnimation(lastFrameDurationInSec);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    debugModel->render();
+    groundPlane->render();
 
     SDL_GL_SwapWindow(window);
 }

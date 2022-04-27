@@ -28,7 +28,7 @@ SDL_Event event;
 SDL_Window* window;
 Camera* camera;
 Model* model;
-Model* debugModel;
+Model* groundPlane;
 Animation* animation;
 Animator* animator;
 

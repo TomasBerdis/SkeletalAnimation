@@ -73,7 +73,22 @@ find_file(sphere sphere.glb
 )
 
 # animations
-find_file(legSweep leg_sweep.gltf
+find_file(crawling crawling.glb
+    HINTS ${CMAKE_CURRENT_LIST_DIR}/res/animations
+)
+find_file(dying dying.glb
+    HINTS ${CMAKE_CURRENT_LIST_DIR}/res/animations
+)
+find_file(leg_sweep leg_sweep.gltf
+    HINTS ${CMAKE_CURRENT_LIST_DIR}/res/animations
+)
+find_file(running running.glb
+    HINTS ${CMAKE_CURRENT_LIST_DIR}/res/animations
+)
+find_file(sitting_clap sitting_clap.glb
+    HINTS ${CMAKE_CURRENT_LIST_DIR}/res/animations
+)
+find_file(swing_to_land swing_to_land.glb
     HINTS ${CMAKE_CURRENT_LIST_DIR}/res/animations
 )
 find_file(taunt taunt.glb
@@ -92,7 +107,7 @@ target_link_libraries(${PROJECT_NAME}
 target_compile_definitions(${PROJECT_NAME} PUBLIC "DEBUG_VS=\"${debugVS}\"" "DEBUG_FS=\"${debugFS}\"" "MESH_VS=\"${meshVS}\"" "MESH_FS=\"${meshFS}\"" "SKINNED_MESH_VS=\"${skinnedMeshVS}\"" "SKINNED_MESH_FS=\"${skinnedMeshFS}\"")
 target_compile_definitions(${PROJECT_NAME} PUBLIC "MODEL_ALEX=\"${alex}\"" "MODEL_GASMASK=\"${gasmask}\"" "MODEL_KACHUJIN=\"${kachujin}\"" "MODEL_MAW=\"${maw}\"" "MODEL_NINJA=\"${ninja}\"" "MODEL_PALADIN=\"${paladin}\"" "MODEL_VAMPIRE=\"${vampire}\"" "MODEL_WHALE=\"${whale}\"")
 target_compile_definitions(${PROJECT_NAME} PUBLIC "MODEL_CUBE=\"${cube}\"" "MODEL_PLANE=\"${plane}\"" "MODEL_SPHERE=\"${sphere}\"")
-target_compile_definitions(${PROJECT_NAME} PUBLIC "ANIMATION_LEG_SWEEP=\"${legSweep}\"" "ANIMATION_TAUNT=\"${taunt}\"" "ANIMATION_WHALE=\"${whale}\"")
+target_compile_definitions(${PROJECT_NAME} PUBLIC "ANIMATION_CRAWLING=\"${crawling}\"" "ANIMATION_DYING=\"${dying}\"" "ANIMATION_LEG_SWEEP=\"${leg_sweep}\"" "ANIMATION_RUNNING=\"${running}\"" "ANIMATION_SITTING_CLAP=\"${sitting_clap}\"" "ANIMATION_SWING_TO_LAND=\"${swing_to_land}\"" "ANIMATION_TAUNT=\"${taunt}\"" "ANIMATION_WHALE=\"${whale}\"")
 target_compile_definitions(${PROJECT_NAME} PUBLIC "DEBUG_TEXTURE=\"${debugTexture}\"")
 
 SET_PROPERTY(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})

@@ -53,6 +53,9 @@ private:
 	std::string name = "";
 	unsigned int id = -1;
 	glm::mat4 localTransform;
+	glm::vec3 localTranslation;
+	glm::quat localRotation;
+	glm::vec3 localScale;
 	std::vector<KeyframePosition>* keyframePositions = nullptr;
 	std::vector<KeyframeRotation>* keyframeRotations = nullptr;
 	std::vector<KeyframeScale>* keyframeScales = nullptr;

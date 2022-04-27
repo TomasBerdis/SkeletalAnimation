@@ -79,6 +79,16 @@ namespace gltfUtil
 		return dataPtr;
 	}
 
+	inline glm::vec3 vec3FromDoubleVector(std::vector<double>* vector)
+	{
+		return glm::vec3(vector->at(0), vector->at(1), vector->at(2));
+	}
+
+	inline glm::quat quatFromDoubleVector(std::vector<double>* vector)
+	{
+		return glm::quat((float)(vector->at(3)), (float)(vector->at(0)), (float)(vector->at(1)), (float)(vector->at(2)));
+	}
+
 	inline glm::mat4 getTRSMatrix(std::vector<double>* translation, std::vector<double>* rotation, std::vector<double>* scale)
 	{
 		if (translation->empty() && rotation->empty() && scale->empty())
@@ -90,11 +100,11 @@ namespace gltfUtil
 
 		// WARNING: Potentially slow code
 		if (!translation->empty())
-			T = glm::translate(glm::mat4{ 1.0f }, { translation->at(0), translation->at(1), translation->at(2) });
+			T = glm::translate(glm::mat4{ 1.0f }, vec3FromDoubleVector(translation));
 		if (!rotation->empty())
-			R = glm::mat4_cast(glm::normalize(glm::quat((float)(rotation->at(3)), (float)(rotation->at(0)), (float)(rotation->at(1)), (float)(rotation->at(2)))));
+			R = glm::mat4_cast(glm::normalize(quatFromDoubleVector(rotation)));
 		if (!scale->empty())
-			S = glm::scale(glm::mat4{ 1.0f }, { scale->at(0), scale->at(1), scale->at(2) });
+			S = glm::scale(glm::mat4{ 1.0f }, vec3FromDoubleVector(scale));
 
 		return T * R * S;
 	}

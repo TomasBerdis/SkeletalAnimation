@@ -4,6 +4,18 @@
 Channel::Channel(int nodeId, tinygltf::Node* node)
 {
 	localTransform = gltfUtil::getTRSMatrix(&node->translation, &node->rotation, &node->scale);
+	if (node->translation.empty())
+		localTranslation = glm::vec3(0.0f, 0.0f, 0.0f);
+	else
+		localTranslation = gltfUtil::vec3FromDoubleVector(&node->translation);
+	if (node->rotation.empty())
+		localRotation = glm::quat();
+	else
+		localRotation = glm::normalize(gltfUtil::quatFromDoubleVector(&node->rotation));
+	if (node->scale.empty())
+		localScale = glm::vec3(1.0f, 1.0f, 1.0f);
+	else
+		localScale = gltfUtil::vec3FromDoubleVector(&node->scale);
 	name = node->name;
 	id = nodeId;
 }
@@ -109,11 +121,18 @@ glm::mat4 Channel::getFinalTransformation(float animationTime)
 	glm::mat4 rotation		= glm::mat4(1.0f);
 	glm::mat4 scale			= glm::mat4(1.0f);
 	if (keyframePositions)
-		translation	= getInterpolatedTranslation(animationTime);
+		translation = getInterpolatedTranslation(animationTime);
+	else
+		translation = glm::translate(glm::mat4(1.0f), localTranslation);
 	if (keyframeRotations)
-		rotation	= getInterpolatedRotation	(animationTime);
+		rotation	= getInterpolatedRotation(animationTime);
+	else
+		rotation	= glm::mat4_cast(localRotation);
 	if (keyframeScales)
-		scale		= getInterpolatedScale		(animationTime);
+		scale		= getInterpolatedScale(animationTime);
+	else
+		scale		= glm::scale(glm::mat4(1.0f), localScale);
+
 	return (translation * rotation * scale);
 }
 

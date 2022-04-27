@@ -23,7 +23,6 @@ private:
 	std::vector<glm::mat4> animChannelMatrices;
 	std::vector<glm::mat4> finalBoneMatrices;
 	std::map<int, int> armatureToAnimationMap;
-	std::vector<Model*> debugModels;
 
 	bool checkCompatibility();
 };
