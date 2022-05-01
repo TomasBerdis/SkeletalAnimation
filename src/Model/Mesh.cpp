@@ -1,7 +1,7 @@
 #include "Mesh.hpp"
 
 
-Mesh::Mesh(tinygltf::Primitive *primitive, tinygltf::Model *loadedModel, glm::mat4 globalTransform)
+Mesh::Mesh(tinygltf::Primitive* const primitive, tinygltf::Model* const loadedModel, const glm::mat4 globalTransform)
 {
 	this->programType = Renderer::Program::MESH;
 	this->globalTransform = globalTransform;
@@ -18,10 +18,10 @@ Mesh::Mesh(tinygltf::Primitive *primitive, tinygltf::Model *loadedModel, glm::ma
 
 	// WARNING: Assuming data is stored in buffers sequentally!!! 
 	float* positionsPtr	 = (float*) gltfUtil::getDataPtr(nullptr, positionsAccessorId	, loadedModel);
-	float* normalsPtr	 = (float*) gltfUtil::getDataPtr(nullptr, normalsAccessorId	, loadedModel);
+	float* normalsPtr	 = (float*) gltfUtil::getDataPtr(nullptr, normalsAccessorId		, loadedModel);
 	float* texCoords0Ptr = (float*) gltfUtil::getDataPtr(nullptr, texCoords0AccessorId	, loadedModel);
-	float* tangentPtr	 = (float*) gltfUtil::getDataPtr(nullptr, tangentAccessorId	, loadedModel);
-	uint16_t *indicesPtr = (uint16_t*) gltfUtil::getDataPtr(nullptr, indicesAccessorId, loadedModel);
+	float* tangentPtr	 = (float*) gltfUtil::getDataPtr(nullptr, tangentAccessorId		, loadedModel);
+	uint16_t *indicesPtr = (uint16_t*) gltfUtil::getDataPtr(nullptr, indicesAccessorId	, loadedModel);
 
 	for (size_t i = 0; i < numVertices; i++)
 	{
@@ -43,7 +43,7 @@ Mesh::Mesh(tinygltf::Primitive *primitive, tinygltf::Model *loadedModel, glm::ma
 
 	for (size_t i = 0; i < numIndices; i++)
 	{
-		unsigned short index = *indicesPtr++;
+		uint16_t index = *indicesPtr++;
 		indices.push_back(index);
 	}
 
@@ -55,7 +55,7 @@ Mesh::~Mesh()
 {
 }
 
-void Mesh::loadMaterial(tinygltf::Primitive* primitive, tinygltf::Model* loadedModel)
+void Mesh::loadMaterial(tinygltf::Primitive* const primitive, tinygltf::Model* const loadedModel)
 {
 	tinygltf::Material* m;
 	if (!loadedModel->materials.empty())
@@ -155,7 +155,7 @@ void Mesh::render()
 	glBindVertexArray(0);
 }
 
-void Mesh::updateGlobalTransform(glm::mat4 matrix)
+void Mesh::updateGlobalTransform(const glm::mat4 matrix)
 {
 	globalTransform = matrix;
 }

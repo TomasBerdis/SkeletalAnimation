@@ -1,6 +1,6 @@
 #include "SkinnedMesh.hpp"
 
-SkinnedMesh::SkinnedMesh(tinygltf::Primitive* primitive, tinygltf::Model* loadedModel, glm::mat4 globalTransform)
+SkinnedMesh::SkinnedMesh(tinygltf::Primitive* const primitive, tinygltf::Model* const loadedModel, const glm::mat4 globalTransform)
 {
 	this->programType = Renderer::Program::SKINNED_MESH;
 	this->globalTransform = globalTransform;

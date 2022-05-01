@@ -21,7 +21,7 @@ void Model::loadTextures()
 	std::ranges::for_each(loadedModel.images, [&](tinygltf::Image i) { renderer->loadTexture(&i); });
 }
 
-void Model::processNode(const tinygltf::Node *node, const glm::mat4 parentTransform)
+void Model::processNode(const tinygltf::Node* const node, const glm::mat4 parentTransform)
 {
 	const glm::mat4 nodeGlobalTransform = parentTransform * gltfUtil::getTRSMatrix(&node->translation, &node->rotation, &node->scale);
 
@@ -43,19 +43,19 @@ void Model::render()
 	std::ranges::for_each(meshes, [](Mesh* m) { m->render(); });
 }
 
-void Model::translate(glm::vec3 translation)
+void Model::translate(const glm::vec3 translation)
 {
 	modelMatrix = glm::translate(modelMatrix, translation);
 	updateMeshTransforms();
 }
 
-void Model::rotate(glm::quat rotation)
+void Model::rotate(const glm::quat rotation)
 {
 	modelMatrix *= glm::mat4_cast(rotation);
 	updateMeshTransforms();
 }
 
-void Model::scale(glm::vec3 scale)
+void Model::scale(const glm::vec3 scale)
 {
 	modelMatrix = glm::scale(modelMatrix, scale);
 	updateMeshTransforms();

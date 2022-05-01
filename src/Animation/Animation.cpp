@@ -74,7 +74,7 @@ int32_t Animation::getChannelIdByName(std::string name)
 		return -1;
 }
 
-void Animation::processNode(tinygltf::Node* node, Channel* parent)
+void Animation::processNode(const tinygltf::Node* const node, Channel* const parent)
 {
 	Channel* thisNode = new Channel(currentId, node);
 	if (parent != nullptr)

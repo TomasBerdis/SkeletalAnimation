@@ -1,7 +1,7 @@
 #include "GLProgram.hpp"
 
 
-GLProgram::GLProgram(std::vector<std::string> shaderPaths)
+GLProgram::GLProgram(const std::vector<std::string> shaderPaths)
 {
 	GLuint vertexShader		 = -1;
 	GLuint fragmentShader	 = -1;
@@ -74,7 +74,7 @@ void GLProgram::use()
 	glUseProgram(program);
 }
 
-void GLProgram::prepareShader(GLuint *shader, GLuint shaderType, std::string path)
+void GLProgram::prepareShader(GLuint* shader, GLuint shaderType, const std::string path)
 {
 	GLuint createdShader = glCreateShader(shaderType);
 	const GLchar *vertexString = (GLchar *) SDL_LoadFile(path.c_str(), nullptr);

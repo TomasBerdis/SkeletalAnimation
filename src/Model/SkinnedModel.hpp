@@ -15,7 +15,7 @@ struct Bone
 class SkinnedModel : public Model
 {
 public:
-	SkinnedModel(std::string path);
+	SkinnedModel(const std::string path);
 
 	void render();
 	std::vector<Bone>* getArmature();
@@ -27,5 +27,5 @@ private:
 	int32_t currentNodeId = -1;
 
 	void loadArmature();
-	void processNode(const tinygltf::Node* node, const glm::mat4 parentTransform);
+	void processNode(const tinygltf::Node* const node, const glm::mat4 parentTransform);
 };

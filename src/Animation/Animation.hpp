@@ -33,6 +33,6 @@ private:
 	int32_t currentId = -1;
 	int32_t timeAccessor = -1;
 
-	void processNode(tinygltf::Node* node, Channel* parent);
+	void processNode(const tinygltf::Node* const node, Channel* const parent);
 	void loadKeyframes();
 };

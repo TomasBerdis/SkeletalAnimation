@@ -9,7 +9,7 @@
 
 namespace gltfUtil
 {
-	inline void loadFile(std::string path, tinygltf::Model* loadedModel)
+	inline void loadFile(const std::string path, tinygltf::Model* const loadedModel)
 	{
 		bool ret = false;
 		std::string err;
@@ -36,7 +36,7 @@ namespace gltfUtil
 		}
 	}
 
-	inline void* getDataPtr(int32_t* bytes, int32_t accessorId, tinygltf::Model* loadedModel)
+	inline void* getDataPtr(int32_t* bytes, const int32_t accessorId, tinygltf::Model* const loadedModel)
 	{
 		// BufferView
 		const int32_t bufferViewId = loadedModel->accessors[accessorId].bufferView;
@@ -57,7 +57,7 @@ namespace gltfUtil
 	/*
 	  Copies bytes given by accessor and returns pointer to that new memory
 	*/
-	inline void* copyBufferData(const int32_t accessorId, tinygltf::Model* loadedModel)
+	inline void* copyBufferData(const int32_t accessorId, tinygltf::Model* const loadedModel)
 	{
 		// BufferView
 		const int32_t bufferViewId = loadedModel->accessors[accessorId].bufferView;
@@ -110,7 +110,7 @@ namespace gltfUtil
 	}
 
 	// glTF matrix alignment: https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#data-alignment
-	inline glm::mat4 getMat4FromFloatPtr(float* ptr)
+	inline glm::mat4 getMat4FromFloatPtr(const float* ptr)
 	{
 		std::vector<float> m;
 		for (size_t i = 0; i < 16; i++)

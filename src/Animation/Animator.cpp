@@ -5,7 +5,7 @@ Animator::Animator()
 {
 }
 
-Animator::Animator(SkinnedModel* model, Animation* animation)
+Animator::Animator(SkinnedModel* const model, Animation* const animation)
 {
 	setActor(model, animation);
 }
@@ -14,7 +14,7 @@ Animator::~Animator()
 {
 }
 
-void Animator::setActor(SkinnedModel* model, Animation* animation)
+void Animator::setActor(SkinnedModel* const model, Animation* const animation)
 {
 	this->model = model;
 	this->animation = animation;

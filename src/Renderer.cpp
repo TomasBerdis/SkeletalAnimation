@@ -109,7 +109,7 @@ void Renderer::loadTexture(const std::string path)
 	stbi_image_free(texture.data);
 }
 
-void Renderer::loadTexture(tinygltf::Image* image)
+void Renderer::loadTexture(const tinygltf::Image* const image)
 {
 	if (textureMap.contains(image->name))
 		return;

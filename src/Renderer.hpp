@@ -33,7 +33,7 @@ public:
 	Camera *getCamera();
 	void setCamera(Camera* camera);
 	void loadTexture(const std::string name);
-	void loadTexture(tinygltf::Image* image);
+	void loadTexture(const tinygltf::Image* const image);
 	void bindTexture(const std::string name, uint32_t textureUnit);
 
 

@@ -26,7 +26,7 @@ struct KeyframeScale
 class Channel
 {
 public:
-	Channel(int32_t nodeId, tinygltf::Node* node);
+	Channel(int32_t nodeId, const tinygltf::Node* const node);
 	~Channel();
 
 	void addChild(Channel* child);

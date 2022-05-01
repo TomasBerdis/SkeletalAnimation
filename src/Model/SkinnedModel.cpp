@@ -1,6 +1,6 @@
 #include "SkinnedModel.hpp"
 
-SkinnedModel::SkinnedModel(std::string path)
+SkinnedModel::SkinnedModel(const std::string path)
 {
 	gltfUtil::loadFile(path, &loadedModel);
 	loadTextures();
@@ -40,7 +40,7 @@ void SkinnedModel::loadArmature()
 	}
 }
 
-void SkinnedModel::processNode(const tinygltf::Node* node, const glm::mat4 parentTransform)
+void SkinnedModel::processNode(const tinygltf::Node* const node, const glm::mat4 parentTransform)
 {
 	const glm::mat4 nodeGlobalTransform = parentTransform * gltfUtil::getTRSMatrix(&node->translation, &node->rotation, &node->scale);
 

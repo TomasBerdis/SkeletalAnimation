@@ -8,10 +8,10 @@ class Animator
 {
 public:
 	Animator();
-	Animator(SkinnedModel* model, Animation* animation);
+	Animator(SkinnedModel* const model, Animation* const animation);
 	~Animator();
 
-	void setActor(SkinnedModel* model, Animation* animation);
+	void setActor(SkinnedModel* const model, Animation* const animation);
 	void updateAnimation(float deltaTime);
 
 private:

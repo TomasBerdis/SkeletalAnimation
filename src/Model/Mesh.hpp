@@ -21,12 +21,12 @@ struct Material
 class Mesh
 {
 public:
-	Mesh(tinygltf::Primitive *primitive, tinygltf::Model *loadedModel, glm::mat4 globalTransform);
+	Mesh(tinygltf::Primitive* const primitive, tinygltf::Model* const loadedModel, const glm::mat4 globalTransform);
 	Mesh() {};
 	~Mesh();
 
 	void virtual render();
-	void updateGlobalTransform(glm::mat4 matrix);
+	void updateGlobalTransform(const glm::mat4 matrix);
 	void updateProgramType(Renderer::Program programType);
 
 protected:
@@ -43,7 +43,7 @@ protected:
 		glm::vec4	tangent;	// tangent.w is the bitangent sign
 	};
 
-	void loadMaterial(tinygltf::Primitive* primitive, tinygltf::Model* loadedModel);
+	void loadMaterial(tinygltf::Primitive* const primitive, tinygltf::Model* const loadedModel);
 	void initOpenGLBuffers();
 
 private:

@@ -52,5 +52,5 @@ public:
 private:
 	GLuint program;
 
-	void prepareShader(GLuint *shader, GLuint shaderType, std::string path);
+	void prepareShader(GLuint* shader, GLuint shaderType, const std::string path);
 };

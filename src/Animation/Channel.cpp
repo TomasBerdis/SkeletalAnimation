@@ -1,7 +1,7 @@
 #include "Channel.hpp"
 
 
-Channel::Channel(int32_t nodeId, tinygltf::Node* node)
+Channel::Channel(int32_t nodeId, const tinygltf::Node* const node)
 {
 	localTransform = gltfUtil::getTRSMatrix(&node->translation, &node->rotation, &node->scale);
 	if (node->translation.empty())
