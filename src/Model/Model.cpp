@@ -7,6 +7,8 @@ Model::Model(std::string path)
 
 	int startingNodeId = loadedModel.scenes[loadedModel.defaultScene].nodes[0];
 	processNode(&loadedModel.nodes[startingNodeId], glm::mat4 {1.0f});
+
+	loadedModel.~Model();
 }
 
 Model::~Model()

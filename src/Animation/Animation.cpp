@@ -16,6 +16,9 @@ Animation::Animation(std::string path)
 
 	// Load keyframe data
 	loadKeyframes();
+
+	// Clean intermediate file data
+	loadedAnimation.~Model();
 }
  
 Animation::~Animation()

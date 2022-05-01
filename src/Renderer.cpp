@@ -61,7 +61,7 @@ void Renderer::createProgram(Program programId)
 			program = new GLProgram({ DEBUG_VS, DEBUG_FS });
 			break;
 		default:
-			std::cerr << "Renderer: Cannot create unexisting program" << std::endl;
+			std::cerr << "Renderer: Cannot create unexisting program" << '\n';
 	}
 
 	programMap.insert({ programId, program });
@@ -80,14 +80,14 @@ void Renderer::loadTexture(std::string path)
 	texture.data = stbi_load(path.c_str(), &texture.width, &texture.height, &channels, 0);
 
 	if (texture.data == NULL)
-		std::cerr << "Renderer: Cannot load texture: " << name << std::endl;
+		std::cerr << "Renderer: Cannot load texture: " << name << '\n';
 
 	if (channels == 3)
 		texture.format = GL_RGB;
 	else if (channels == 4)
 		texture.format = GL_RGBA;
 	else
-		std::cerr << "Renderer: Unsupported texture format" << std::endl;
+		std::cerr << "Renderer: Unsupported texture format" << '\n';
 
 	texture.type = GL_UNSIGNED_BYTE;
 
@@ -104,7 +104,7 @@ void Renderer::loadTexture(std::string path)
 
 	textureMap.insert({ name, texture });
 
-	std::cout << "Texture: \'" << name << "\' loaded" << std::endl;
+	std::cout << "Texture: \'" << name << "\' loaded" << '\n';
 
 	stbi_image_free(texture.data);
 }
@@ -154,7 +154,7 @@ void Renderer::loadTexture(tinygltf::Image* image)
 
 	textureMap.insert({ image->name, texture });
 
-	std::cout << "Texture: \'" << image->name << "\' loaded" << std::endl;
+	std::cout << "Texture: \'" << image->name << "\' loaded" << '\n';
 }
 
 void Renderer::bindTexture(std::string name, unsigned int textureUnit)

@@ -10,6 +10,8 @@ SkinnedModel::SkinnedModel(std::string path)
 
 	loadArmature();
 	processNode(&loadedModel.nodes[startingNodeId], glm::mat4{ 1.0f });
+
+	loadedModel.~Model();
 }
 
 void SkinnedModel::render()

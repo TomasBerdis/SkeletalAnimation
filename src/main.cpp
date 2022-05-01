@@ -8,6 +8,9 @@
 // #define TINYGLTF_NOEXCEPTION // optional. disable exception handling.
 #include "tinyGLTF/tiny_gltf.h"
 
+#define MEASURE(code)   __measureStartTime__ = SDL_GetTicks(); \
+std::cout << "###MEASURE_START:\nFILE:" << __FILE__ << '\n' << "LINE: " << __LINE__ << '\n'; \
+code std::cout << "Execution time: " << (SDL_GetTicks() - __measureStartTime__) << "ms\n###MEASURE_END\n";
  
 int main(int argc, char **argv)
 {
@@ -44,11 +47,12 @@ void initialize()
     glGetIntegerv(GL_CONTEXT_FLAGS, &contextFlags);
     if (contextFlags & GL_CONTEXT_FLAG_DEBUG_BIT)
     {
-        std::cout << "Debug context created." << std::endl;
-        glEnable(GL_DEBUG_OUTPUT);
-        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-        glDebugMessageCallback(glDebugOutputCallback, nullptr);
-        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+        std::cout << "Debug context created." << '\n';
+        // Comment out to toggle debug output
+        //glEnable(GL_DEBUG_OUTPUT);
+        //glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        //glDebugMessageCallback(glDebugOutputCallback, nullptr);
+        //glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
     }
 
     glEnable(GL_DEPTH_TEST);

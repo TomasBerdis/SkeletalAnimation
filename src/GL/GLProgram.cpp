@@ -47,7 +47,7 @@ GLProgram::GLProgram(std::vector<std::string> shaderPaths)
 	{
 		char *buffer = new char[bufferLen];
 		glGetProgramInfoLog(program, bufferLen, nullptr, buffer);
-		std::cerr << buffer << std::endl;
+		std::cerr << buffer << '\n';
 		delete[]buffer;
 		glDeleteProgram(program);
 		program = 0;

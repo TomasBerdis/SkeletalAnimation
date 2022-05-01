@@ -40,8 +40,8 @@ public:
 private:
 	static Renderer *instance;
 	Camera *camera = nullptr;
-	std::map<Program, GLProgram*> programMap;
-	std::map<std::string, Texture> textureMap;
+	std::unordered_map<Program, GLProgram*> programMap;
+	std::unordered_map<std::string, Texture> textureMap;
 
 
 	Renderer();

@@ -19,7 +19,7 @@ void Animator::setActor(SkinnedModel* model, Animation* animation)
 	this->model = model;
 	this->animation = animation;
     if (checkCompatibility() != true)
-        std::cerr << "ERROR: Animator: Model and animation are incompatible. Please check bone names." << std::endl;
+        std::cerr << "ERROR: Animator: Model and animation are incompatible. Please check bone names." << '\n';
 
     duration = animation->getDuration();
     ticksPerSecond = animation->getTicksPerSecond();

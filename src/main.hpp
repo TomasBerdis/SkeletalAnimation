@@ -38,3 +38,4 @@ float mouseLastY = screenHeight / 2.0f;
 bool firstMouse = true;
 bool mouseRightButtonDown = false;
 float lastFrameDurationInSec = 0.0f;
+uint32_t __measureStartTime__;
