@@ -19,10 +19,10 @@ private:
 	Animation* animation = nullptr;
 	float currentTime	 = 0.0f;
 	float duration		 = 0.0f;
-	int ticksPerSecond	 = 0;
+	int32_t ticksPerSecond	 = 0;
 	std::vector<glm::mat4> animChannelMatrices;
 	std::vector<glm::mat4> finalBoneMatrices;
-	std::map<int, int> armatureToAnimationMap;
+	std::map<int32_t, int32_t> armatureToAnimationMap;
 
 	bool checkCompatibility();
 };

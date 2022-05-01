@@ -7,21 +7,21 @@ Mesh::Mesh(tinygltf::Primitive *primitive, tinygltf::Model *loadedModel, glm::ma
 	this->globalTransform = globalTransform;
 
 	// Accessors
-	int const positionsAccessorId	= primitive->attributes["POSITION"];
-	int const normalsAccessorId		= primitive->attributes["NORMAL"];
-	int const texCoords0AccessorId	= primitive->attributes["TEXCOORD_0"];
-	int const tangentAccessorId		= primitive->attributes["TANGENT"];
-	int const indicesAccessorId		= primitive->indices;
+	const int32_t positionsAccessorId	= primitive->attributes["POSITION"];
+	const int32_t normalsAccessorId		= primitive->attributes["NORMAL"];
+	const int32_t texCoords0AccessorId	= primitive->attributes["TEXCOORD_0"];
+	const int32_t tangentAccessorId		= primitive->attributes["TANGENT"];
+	const int32_t indicesAccessorId		= primitive->indices;
 
-	int numVertices = loadedModel->accessors[positionsAccessorId].count;
-	int numIndices  = loadedModel->accessors[indicesAccessorId].count;
+	const int32_t numVertices = loadedModel->accessors[positionsAccessorId].count;
+	const int32_t numIndices  = loadedModel->accessors[indicesAccessorId].count;
 
 	// WARNING: Assuming data is stored in buffers sequentally!!! 
-	float *positionsPtr	 = (float *) gltfUtil::getDataPtr(nullptr	, positionsAccessorId	, loadedModel);
-	float *normalsPtr	 = (float *) gltfUtil::getDataPtr(nullptr, normalsAccessorId		, loadedModel);
-	float *texCoords0Ptr = (float *) gltfUtil::getDataPtr(nullptr, texCoords0AccessorId	, loadedModel);
-	float *tangentPtr	 = (float *) gltfUtil::getDataPtr(nullptr, tangentAccessorId		, loadedModel);
-	unsigned short *indicesPtr = (unsigned short *) gltfUtil::getDataPtr(nullptr, indicesAccessorId, loadedModel);
+	float* positionsPtr	 = (float*) gltfUtil::getDataPtr(nullptr, positionsAccessorId	, loadedModel);
+	float* normalsPtr	 = (float*) gltfUtil::getDataPtr(nullptr, normalsAccessorId	, loadedModel);
+	float* texCoords0Ptr = (float*) gltfUtil::getDataPtr(nullptr, texCoords0AccessorId	, loadedModel);
+	float* tangentPtr	 = (float*) gltfUtil::getDataPtr(nullptr, tangentAccessorId	, loadedModel);
+	uint16_t *indicesPtr = (uint16_t*) gltfUtil::getDataPtr(nullptr, indicesAccessorId, loadedModel);
 
 	for (size_t i = 0; i < numVertices; i++)
 	{
@@ -66,19 +66,19 @@ void Mesh::loadMaterial(tinygltf::Primitive* primitive, tinygltf::Model* loadedM
 		return;
 	}
 
-	int colorTextureId = m->pbrMetallicRoughness.baseColorTexture.index;
+	const int32_t colorTextureId = m->pbrMetallicRoughness.baseColorTexture.index;
 	if (colorTextureId > -1)
 	{
-		int colorTextureImageId = loadedModel->textures[colorTextureId].source;
+		const int32_t colorTextureImageId = loadedModel->textures[colorTextureId].source;
 		material.colorTexture = loadedModel->images[colorTextureImageId].name;
 	}
 	else
 		material.colorTexture = Renderer::debugTexture;
 
-	int normalTextureId = m->normalTexture.index;
+	const int32_t normalTextureId = m->normalTexture.index;
 	if (normalTextureId > -1)
 	{
-		int normalTextureImageId = loadedModel->textures[normalTextureId].source;
+		const int32_t normalTextureImageId = loadedModel->textures[normalTextureId].source;
 		material.normalTexture = loadedModel->images[normalTextureImageId].name;
 	}
 }
@@ -91,7 +91,7 @@ void Mesh::initOpenGLBuffers()
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
 	glCreateBuffers(1, &ebo);
-	glNamedBufferData(ebo, indices.size() * sizeof(unsigned short), indices.data(), GL_STATIC_DRAW);
+	glNamedBufferData(ebo, indices.size() * sizeof(uint16_t), indices.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
 	glCreateVertexArrays(1, &vao);

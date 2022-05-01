@@ -36,14 +36,14 @@ namespace gltfUtil
 		}
 	}
 
-	inline void* getDataPtr(int* bytes, int accessorId, tinygltf::Model* loadedModel)
+	inline void* getDataPtr(int32_t* bytes, int32_t accessorId, tinygltf::Model* loadedModel)
 	{
 		// BufferView
-		const int bufferViewId = loadedModel->accessors[accessorId].bufferView;
+		const int32_t bufferViewId = loadedModel->accessors[accessorId].bufferView;
 		const tinygltf::BufferView* bufferView = &loadedModel->bufferViews[bufferViewId];
-		const int bufferId = bufferView->buffer;
-		const int byteLength = bufferView->byteLength;
-		const int byteOffset = bufferView->byteOffset;
+		const int32_t bufferId = bufferView->buffer;
+		const int32_t byteLength = bufferView->byteLength;
+		const int32_t byteOffset = bufferView->byteOffset;
 
 		// Buffer
 		const tinygltf::Buffer* buffer = &loadedModel->buffers[bufferId];
@@ -57,14 +57,14 @@ namespace gltfUtil
 	/*
 	  Copies bytes given by accessor and returns pointer to that new memory
 	*/
-	inline void* copyBufferData(int accessorId, tinygltf::Model* loadedModel)
+	inline void* copyBufferData(const int32_t accessorId, tinygltf::Model* loadedModel)
 	{
 		// BufferView
-		const int bufferViewId = loadedModel->accessors[accessorId].bufferView;
+		const int32_t bufferViewId = loadedModel->accessors[accessorId].bufferView;
 		const tinygltf::BufferView* bufferView = &loadedModel->bufferViews[bufferViewId];
-		const int bufferId = bufferView->buffer;
-		const int byteLength = bufferView->byteLength;
-		const int byteOffset = bufferView->byteOffset;
+		const int32_t bufferId = bufferView->buffer;
+		const int32_t byteLength = bufferView->byteLength;
+		const int32_t byteOffset = bufferView->byteOffset;
 
 		// Buffer
 		const tinygltf::Buffer* buffer = &loadedModel->buffers[bufferId];
@@ -79,17 +79,17 @@ namespace gltfUtil
 		return dataPtr;
 	}
 
-	inline glm::vec3 vec3FromDoubleVector(std::vector<double>* vector)
+	inline glm::vec3 vec3FromDoubleVector(const std::vector<double>* vector)
 	{
 		return glm::vec3(vector->at(0), vector->at(1), vector->at(2));
 	}
 
-	inline glm::quat quatFromDoubleVector(std::vector<double>* vector)
+	inline glm::quat quatFromDoubleVector(const std::vector<double>* vector)
 	{
 		return glm::quat((float)(vector->at(3)), (float)(vector->at(0)), (float)(vector->at(1)), (float)(vector->at(2)));
 	}
 
-	inline glm::mat4 getTRSMatrix(std::vector<double>* translation, std::vector<double>* rotation, std::vector<double>* scale)
+	inline glm::mat4 getTRSMatrix(const std::vector<double>* translation, const std::vector<double>* rotation, const std::vector<double>* scale)
 	{
 		if (translation->empty() && rotation->empty() && scale->empty())
 			return glm::mat4{ 1.0f };

@@ -12,7 +12,7 @@
 std::cout << "###MEASURE_START:\nFILE:" << __FILE__ << '\n' << "LINE: " << __LINE__ << '\n'; \
 code std::cout << "Execution time: " << (SDL_GetTicks() - __measureStartTime__) << "ms\n###MEASURE_END\n";
  
-int main(int argc, char **argv)
+int32_t main(int32_t argc, char **argv)
 {
     initialize();
     run();
@@ -43,7 +43,7 @@ void initialize()
     if (glewInit() != GLEW_OK)
         fprintf(stderr, "Failed to initialize GLEW\n");
 
-    int contextFlags = 0;
+    int32_t contextFlags = 0;
     glGetIntegerv(GL_CONTEXT_FLAGS, &contextFlags);
     if (contextFlags & GL_CONTEXT_FLAG_DEBUG_BIT)
     {
@@ -73,7 +73,7 @@ void initialize()
     groundPlane->updateProgramType(Renderer::Program::DEBUG);
 
     model       = new SkinnedModel(MODEL_ALEX);
-    animation   = new Animation(ANIMATION_DYING);
+    animation   = new Animation(MODEL_ALEX);
     animator    = new Animator((SkinnedModel*) model, animation);
 }
 
@@ -209,7 +209,7 @@ void render()
     SDL_GL_SwapWindow(window);
 }
 
-static void APIENTRY glDebugOutputCallback(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length,
+static void APIENTRY glDebugOutputCallback(GLenum source, GLenum type, uint32_t id, GLenum severity, GLsizei length,
     const char *message, const void *userParam)
 {
     printf("Debug message: id %d, %s \n", id, message);

@@ -54,7 +54,7 @@ void Camera::decreaseFov(float fovDelta)
 
 void Camera::rotateCamera(float horizontalDelta, float verticalDelta)
 {
-	float sensitivity = 0.1f;
+	const float sensitivity = 0.1f;
 	yaw += horizontalDelta * sensitivity;
 	pitch += verticalDelta * sensitivity;
 

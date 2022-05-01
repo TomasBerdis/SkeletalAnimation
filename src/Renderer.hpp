@@ -11,8 +11,8 @@
 struct Texture
 {
 	GLuint id = 0;
-	int width;
-	int height;
+	int32_t width;
+	int32_t height;
 	GLenum format;
 	GLenum type;
 	void* data;
@@ -32,9 +32,9 @@ public:
 	GLProgram *useProgram(Program program);
 	Camera *getCamera();
 	void setCamera(Camera* camera);
-	void loadTexture(std::string name);
+	void loadTexture(const std::string name);
 	void loadTexture(tinygltf::Image* image);
-	void bindTexture(std::string name, unsigned int textureUnit);
+	void bindTexture(const std::string name, uint32_t textureUnit);
 
 
 private:

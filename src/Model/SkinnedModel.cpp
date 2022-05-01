@@ -5,7 +5,7 @@ SkinnedModel::SkinnedModel(std::string path)
 	gltfUtil::loadFile(path, &loadedModel);
 	loadTextures();
 
-	startingNodeId = currentNodeId = loadedModel.scenes[loadedModel.defaultScene].nodes[0];
+	const int32_t startingNodeId = currentNodeId = loadedModel.scenes[loadedModel.defaultScene].nodes[0];
 	assert(!loadedModel.skins.empty());
 
 	loadArmature();
@@ -26,12 +26,12 @@ std::vector<Bone>* SkinnedModel::getArmature()
 
 void SkinnedModel::loadArmature()
 {
-	int inverseBMAccessorId = loadedModel.skins[0].inverseBindMatrices;
+	const int32_t inverseBMAccessorId = loadedModel.skins[0].inverseBindMatrices;
 	float* inverseBMPtr = (float*) gltfUtil::getDataPtr(nullptr, inverseBMAccessorId, &loadedModel);
 
 	for (size_t i = 0; i < loadedModel.skins[0].joints.size(); i++)
 	{
-		int nodeId = loadedModel.skins[0].joints[i];
+		const int32_t nodeId = loadedModel.skins[0].joints[i];
 		Bone b;
 		b.name = loadedModel.nodes[nodeId].name;
 		b.inverseBindMatrix = gltfUtil::getMat4FromFloatPtr(inverseBMPtr);
@@ -40,9 +40,9 @@ void SkinnedModel::loadArmature()
 	}
 }
 
-void SkinnedModel::processNode(tinygltf::Node* node, glm::mat4 parentTransform)
+void SkinnedModel::processNode(const tinygltf::Node* node, const glm::mat4 parentTransform)
 {
-	glm::mat4 nodeGlobalTransform = parentTransform * gltfUtil::getTRSMatrix(&node->translation, &node->rotation, &node->scale);
+	const glm::mat4 nodeGlobalTransform = parentTransform * gltfUtil::getTRSMatrix(&node->translation, &node->rotation, &node->scale);
 
 	// if this node is a mesh
 	if (node->mesh > -1)
@@ -54,7 +54,7 @@ void SkinnedModel::processNode(tinygltf::Node* node, glm::mat4 parentTransform)
 		});
 	}
 
-	std::ranges::for_each(node->children, [&](int childId)
+	std::ranges::for_each(node->children, [&](int32_t childId)
 	{
 		currentNodeId = childId;
 		processNode(&loadedModel.nodes[childId], nodeGlobalTransform);

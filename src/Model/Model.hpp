@@ -9,7 +9,7 @@
 class Model
 {
 public:
-	Model(std::string path);
+	Model(const std::string path);
 	Model() {};
 	~Model();
 
@@ -33,5 +33,5 @@ private:
 	std::vector<Mesh*> meshes;
 	glm::mat4 modelMatrix = glm::mat4 { 1.0f };
 
-	void processNode(tinygltf::Node* node, glm::mat4 parentTransform);
+	void processNode(const tinygltf::Node* node, const glm::mat4 parentTransform);
 };

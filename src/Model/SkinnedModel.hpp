@@ -9,7 +9,7 @@
 struct Bone
 {
 	std::string name;
-	glm::mat4 inverseBindMatrix;
+	glm::mat4 inverseBindMatrix = glm::mat4(1.0f);
 };
 
 class SkinnedModel : public Model
@@ -24,9 +24,8 @@ public:
 private:
 	std::vector<SkinnedMesh*> meshes;
 	std::vector<Bone> armature;
-	int startingNodeId = -1;
-	int currentNodeId = -1;
+	int32_t currentNodeId = -1;
 
 	void loadArmature();
-	void processNode(tinygltf::Node* node, glm::mat4 parentTransform);
+	void processNode(const tinygltf::Node* node, const glm::mat4 parentTransform);
 };

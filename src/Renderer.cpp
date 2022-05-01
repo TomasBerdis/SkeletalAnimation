@@ -67,16 +67,16 @@ void Renderer::createProgram(Program programId)
 	programMap.insert({ programId, program });
 }
 
-void Renderer::loadTexture(std::string path)
+void Renderer::loadTexture(const std::string path)
 {
-	int pos = path.find_last_of("/") + 1;
+	const int32_t pos = path.find_last_of("/") + 1;
 	std::string name = path.substr(pos, path.length() - pos);
 
 	if (textureMap.contains(name))
 		return;
 
 	Texture texture;
-	int channels;
+	int32_t channels;
 	texture.data = stbi_load(path.c_str(), &texture.width, &texture.height, &channels, 0);
 
 	if (texture.data == NULL)
@@ -157,7 +157,7 @@ void Renderer::loadTexture(tinygltf::Image* image)
 	std::cout << "Texture: \'" << image->name << "\' loaded" << '\n';
 }
 
-void Renderer::bindTexture(std::string name, unsigned int textureUnit)
+void Renderer::bindTexture(const std::string name, uint32_t textureUnit)
 {
 	assert(textureMap.contains(name));
 	glActiveTexture(GL_TEXTURE0 + textureUnit);

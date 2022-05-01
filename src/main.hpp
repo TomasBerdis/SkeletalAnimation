@@ -18,12 +18,12 @@ void cleanup();
 void processInput();
 void simulate();
 void render();
-static void glDebugOutputCallback(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length,
+static void glDebugOutputCallback(GLenum source, GLenum type, uint32_t id, GLenum severity, GLsizei length,
     const char *message, const void *userParam);
 
 bool quit = false;
-int screenWidth = 1280;
-int screenHeight = 768;
+int32_t screenWidth = 1280;
+int32_t screenHeight = 768;
 SDL_Event event;
 SDL_Window* window;
 Camera* camera;

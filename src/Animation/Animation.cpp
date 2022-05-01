@@ -11,7 +11,7 @@ Animation::Animation(std::string path)
 	calculateTicksPerSecond();
 
 	// Load node heirarchy
-	int startingNodeId = currentId = loadedAnimation.scenes[loadedAnimation.defaultScene].nodes[0];
+	const int32_t startingNodeId = currentId = loadedAnimation.scenes[loadedAnimation.defaultScene].nodes[0];
 	processNode(&loadedAnimation.nodes[startingNodeId], nullptr);
 
 	// Load keyframe data
@@ -32,9 +32,9 @@ void Animation::calculateDuration()
 
 void Animation::calculateTicksPerSecond()
 {
-	int bytes;
+	int32_t bytes;
 	float* timePtr = (float*) gltfUtil::getDataPtr(&bytes, timeAccessor, &loadedAnimation);
-	int frames = bytes / sizeof(float);
+	const int32_t frames = bytes / sizeof(float);
 	ticksPerSecond = frames / duration;
 }
 
@@ -43,17 +43,17 @@ float Animation::getDuration()
 	return duration;
 }
 
-int Animation::getTicksPerSecond()
+int32_t Animation::getTicksPerSecond()
 {
 	return ticksPerSecond;
 }
 
-Channel* Animation::getChannel(int id)
+Channel* Animation::getChannel(int32_t id)
 {
 	return channels[id];
 }
 
-Channel* Animation::getChannelById(int id)
+Channel* Animation::getChannelById(int32_t id)
 {
 	if (auto result = std::ranges::find_if(channels, [&](Channel* ch) { return ch->getId() == id; }); result != channels.end())
 		return result[0];
@@ -61,12 +61,12 @@ Channel* Animation::getChannelById(int id)
 		return nullptr;
 }
 
-unsigned int Animation::getChannelCount()
+uint32_t Animation::getChannelCount()
 {
 	return channels.size();
 }
 
-int Animation::getChannelIdByName(std::string name)
+int32_t Animation::getChannelIdByName(std::string name)
 {
 	if (auto result = std::ranges::find_if(channels, [&](Channel* ch) { return ch->getName() == name; }); result != channels.end())
 		return result[0]->getId();
@@ -81,7 +81,7 @@ void Animation::processNode(tinygltf::Node* node, Channel* parent)
 		parent->addChild(thisNode);
 	channels.push_back(thisNode);
 
-	std::ranges::for_each(node->children, [&](int i)
+	std::ranges::for_each(node->children, [&](int32_t i)
 	{
 		currentId = i;
 		processNode(&loadedAnimation.nodes[i], thisNode);
@@ -93,22 +93,22 @@ void Animation::loadKeyframes()
 	std::ranges::for_each(loadedAnimation.animations[0].channels, [&](tinygltf::AnimationChannel animChannel)
 	{
 		tinygltf::AnimationSampler* sampler = &loadedAnimation.animations[0].samplers[animChannel.sampler];
-		int const timeAccessorId = sampler->input;
-		int const valueAccessorId = sampler->output;
+		const int32_t timeAccessorId = sampler->input;
+		const int32_t valueAccessorId = sampler->output;
 		auto channel = std::ranges::find_if(channels, [&](Channel* ch) { return ch->getId() == animChannel.target_node; });
 
 		if (animChannel.target_path == "translation")
 		{
-			int bytes;
+			int32_t bytes;
 			float* timePtr			= (float*) gltfUtil::getDataPtr(NULL, timeAccessorId, &loadedAnimation);
 			float* translationPtr	= (float*) gltfUtil::getDataPtr(&bytes, valueAccessorId, &loadedAnimation);
 			// calculate how many keyframes to load
-			int count = (bytes / sizeof(float)) / 3;	// number of struct elements = 3
+			const int32_t count = (bytes / sizeof(float)) / 3;	// number of struct elements = 3
 
 			std::vector<KeyframePosition>* keyframePositions = new std::vector<KeyframePosition>;
-			for (unsigned int i = 0; i < count; i++)
+			for (size_t i = 0; i < count; i++)
 			{
-				KeyframePosition pos;
+				KeyframePosition pos{};
 				pos.timeStamp = *timePtr++;
 				pos.position.x = *translationPtr++;
 				pos.position.y = *translationPtr++;
@@ -119,17 +119,17 @@ void Animation::loadKeyframes()
 		}
 		else if (animChannel.target_path == "rotation")
 		{
-			int bytes;
+			int32_t bytes;
 			float* timePtr		= (float*) gltfUtil::getDataPtr(NULL, timeAccessorId, &loadedAnimation);
 			float* rotationPtr	= (float*) gltfUtil::getDataPtr(&bytes, valueAccessorId, &loadedAnimation);
 			// calculate how many keyframes to load
-			int count = (bytes / sizeof(float)) / 4;	// number of struct elements = 4
+			const int32_t count = (bytes / sizeof(float)) / 4;	// number of struct elements = 4
 
 			// Quaternion layout: https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#transformations
 			std::vector<KeyframeRotation>* keyframeRotations = new std::vector<KeyframeRotation>;
-			for (unsigned int i = 0; i < count; i++)
+			for (size_t i = 0; i < count; i++)
 			{
-				KeyframeRotation rot;
+				KeyframeRotation rot{};
 				rot.timeStamp = *timePtr++;
 				rot.rotation.x = *rotationPtr++;
 				rot.rotation.y = *rotationPtr++;
@@ -141,16 +141,16 @@ void Animation::loadKeyframes()
 		}
 		else if (animChannel.target_path == "scale")
 		{
-			int bytes;
+			int32_t bytes;
 			float* timePtr			= (float*) gltfUtil::getDataPtr(NULL, timeAccessorId, &loadedAnimation);
 			float* scalingPtr		= (float*) gltfUtil::getDataPtr(&bytes, valueAccessorId, &loadedAnimation);
 			// calculate how many keyframes to load
-			int count = (bytes / sizeof(float)) / 3;	// number of struct elements = 3
+			const int32_t count		= (bytes / sizeof(float)) / 3;	// number of struct elements = 3
 
 			std::vector<KeyframeScale>* keyframeScales = new std::vector<KeyframeScale>;
-			for (unsigned int i = 0; i < count; i++)
+			for (size_t i = 0; i < count; i++)
 			{
-				KeyframeScale scale;
+				KeyframeScale scale{};
 				scale.timeStamp = *timePtr++;
 				scale.scale.x = *scalingPtr++;
 				scale.scale.y = *scalingPtr++;
@@ -162,8 +162,8 @@ void Animation::loadKeyframes()
 	});
 }
 
-void Animation::calculateBoneTransformations(std::vector<glm::mat4>* boneMatrices, float animationTime,
-	glm::mat4 parentTransform, Channel* node)
+void Animation::calculateBoneTransformations(std::vector<glm::mat4>* boneMatrices, const float animationTime,
+	const glm::mat4 parentTransform, Channel* node)
 {
 	if (node == nullptr)
 		node = channels[0];

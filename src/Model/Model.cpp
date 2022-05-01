@@ -1,11 +1,11 @@
 #include "Model.hpp"
 
-Model::Model(std::string path)
+Model::Model(const std::string path)
 {
 	gltfUtil::loadFile(path, &loadedModel);
 	loadTextures();
 
-	int startingNodeId = loadedModel.scenes[loadedModel.defaultScene].nodes[0];
+	const int32_t startingNodeId = loadedModel.scenes[loadedModel.defaultScene].nodes[0];
 	processNode(&loadedModel.nodes[startingNodeId], glm::mat4 {1.0f});
 
 	loadedModel.~Model();
@@ -21,9 +21,9 @@ void Model::loadTextures()
 	std::ranges::for_each(loadedModel.images, [&](tinygltf::Image i) { renderer->loadTexture(&i); });
 }
 
-void Model::processNode(tinygltf::Node *node, glm::mat4 parentTransform)
+void Model::processNode(const tinygltf::Node *node, const glm::mat4 parentTransform)
 {
-	glm::mat4 nodeGlobalTransform = parentTransform * gltfUtil::getTRSMatrix(&node->translation, &node->rotation, &node->scale);
+	const glm::mat4 nodeGlobalTransform = parentTransform * gltfUtil::getTRSMatrix(&node->translation, &node->rotation, &node->scale);
 
 	if (node->mesh > -1)
 	{
@@ -35,7 +35,7 @@ void Model::processNode(tinygltf::Node *node, glm::mat4 parentTransform)
 		}
 	}
 
-	std::ranges::for_each(node->children, [&](int i) { processNode(&loadedModel.nodes[i], nodeGlobalTransform); });
+	std::ranges::for_each(node->children, [&](int32_t i) { processNode(&loadedModel.nodes[i], nodeGlobalTransform); });
 }
 
 void Model::render()

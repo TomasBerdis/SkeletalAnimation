@@ -6,25 +6,25 @@ SkinnedMesh::SkinnedMesh(tinygltf::Primitive* primitive, tinygltf::Model* loaded
 	this->globalTransform = globalTransform;
 
 	// Accessors
-	int const positionsAccessorId	= primitive->attributes["POSITION"];
-	int const normalsAccessorId		= primitive->attributes["NORMAL"];
-	int const texCoords0AccessorId	= primitive->attributes["TEXCOORD_0"];
-	int const tangentAccessorId		= primitive->attributes["TANGENT"];
-	int const jointsAccessorId		= primitive->attributes["JOINTS_0"];
-	int const weightsAccessorId		= primitive->attributes["WEIGHTS_0"];
-	int const indicesAccessorId		= primitive->indices;
+	const int32_t positionsAccessorId	= primitive->attributes["POSITION"];
+	const int32_t normalsAccessorId		= primitive->attributes["NORMAL"];
+	const int32_t texCoords0AccessorId	= primitive->attributes["TEXCOORD_0"];
+	const int32_t tangentAccessorId		= primitive->attributes["TANGENT"];
+	const int32_t jointsAccessorId		= primitive->attributes["JOINTS_0"];
+	const int32_t weightsAccessorId		= primitive->attributes["WEIGHTS_0"];
+	const int32_t indicesAccessorId		= primitive->indices;
 
-	int numVertices = loadedModel->accessors[positionsAccessorId].count;
-	int numIndices = loadedModel->accessors[indicesAccessorId].count;
+	const int32_t numVertices	= loadedModel->accessors[positionsAccessorId].count;
+	const int32_t numIndices	= loadedModel->accessors[indicesAccessorId].count;
 
 	// WARNING: Assuming data is stored in buffers sequentally!!! 
-	float* positionsPtr			= (float*)			gltfUtil::getDataPtr(nullptr, positionsAccessorId	, loadedModel);
-	float* normalsPtr			= (float*)			gltfUtil::getDataPtr(nullptr, normalsAccessorId		, loadedModel);
-	float* texCoords0Ptr		= (float*)			gltfUtil::getDataPtr(nullptr, texCoords0AccessorId	, loadedModel);
-	float* tangentPtr			= (float*)			gltfUtil::getDataPtr(nullptr, tangentAccessorId		, loadedModel);
-	unsigned char* jointsPtr	= (unsigned char*)	gltfUtil::getDataPtr(nullptr, jointsAccessorId		, loadedModel);
-	float* weightsPtr			= (float*)			gltfUtil::getDataPtr(nullptr, weightsAccessorId		, loadedModel);
-	unsigned short* indicesPtr	= (unsigned short*)	gltfUtil::getDataPtr(nullptr, indicesAccessorId		, loadedModel);
+	float* positionsPtr			= (float*)		gltfUtil::getDataPtr(nullptr, positionsAccessorId	, loadedModel);
+	float* normalsPtr			= (float*)		gltfUtil::getDataPtr(nullptr, normalsAccessorId		, loadedModel);
+	float* texCoords0Ptr		= (float*)		gltfUtil::getDataPtr(nullptr, texCoords0AccessorId	, loadedModel);
+	float* tangentPtr			= (float*)		gltfUtil::getDataPtr(nullptr, tangentAccessorId		, loadedModel);
+	uint8_t* jointsPtr			= (uint8_t*)	gltfUtil::getDataPtr(nullptr, jointsAccessorId		, loadedModel);
+	float* weightsPtr			= (float*)		gltfUtil::getDataPtr(nullptr, weightsAccessorId		, loadedModel);
+	uint16_t* indicesPtr		= (uint16_t*)	gltfUtil::getDataPtr(nullptr, indicesAccessorId		, loadedModel);
 
 	for (size_t i = 0; i < numVertices; i++)
 	{
@@ -54,7 +54,7 @@ SkinnedMesh::SkinnedMesh(tinygltf::Primitive* primitive, tinygltf::Model* loaded
 
 	for (size_t i = 0; i < numIndices; i++)
 	{
-		unsigned short index = *indicesPtr++;
+		uint16_t index = *indicesPtr++;
 		indices.push_back(index);
 	}
 
@@ -74,7 +74,7 @@ void SkinnedMesh::initOpenGLBuffers()
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
 	glCreateBuffers(1, &ebo);
-	glNamedBufferData(ebo, indices.size() * sizeof(unsigned short), indices.data(), GL_STATIC_DRAW);
+	glNamedBufferData(ebo, indices.size() * sizeof(uint16_t), indices.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
 	glCreateVertexArrays(1, &vao);
@@ -101,7 +101,7 @@ void SkinnedMesh::initOpenGLBuffers()
 	glVertexArrayAttribBinding(vao, 3, 3);
 	glEnableVertexArrayAttrib(vao, 3);
 	glVertexArrayAttribFormat(vao, 3, 4, GL_FLOAT, GL_FALSE, 0);
-	glVertexArrayVertexBuffer(vao, 3, vbo, (GLintptr)offsetof(Vertex, tangent), sizeof(Vertex));
+	glVertexArrayVertexBuffer(vao, 3, vbo, (GLintptr) offsetof(Vertex, tangent), sizeof(Vertex));
 
 	// bone ids
 	glVertexArrayAttribBinding(vao, 4, 4);

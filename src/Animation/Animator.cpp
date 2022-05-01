@@ -40,7 +40,7 @@ void Animator::updateAnimation(float deltaTime)
         
         for (size_t i = 0; i < finalBoneMatrices.size(); i++)
         {
-            int animChannelId = armatureToAnimationMap[i];
+            const int32_t animChannelId = armatureToAnimationMap[i];
             glm::mat4 ibm = model->getArmature()->at(i).inverseBindMatrix;
             finalBoneMatrices.at(i) = animChannelMatrices.at(animChannelId) * ibm;
         }
@@ -55,9 +55,9 @@ void Animator::updateAnimation(float deltaTime)
 bool Animator::checkCompatibility()
 {
     std::vector<Bone>* armature = model->getArmature();
-    for (int i = 0; i < armature->size(); i++)
+    for (size_t i = 0; i < armature->size(); i++)
     {
-        int id = animation->getChannelIdByName(armature->at(i).name);
+        const int32_t id = animation->getChannelIdByName(armature->at(i).name);
         if (id == -1)
             return false;
         armatureToAnimationMap[i] = id;

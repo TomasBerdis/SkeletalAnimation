@@ -26,21 +26,21 @@ struct KeyframeScale
 class Channel
 {
 public:
-	Channel(int nodeId, tinygltf::Node* node);
+	Channel(int32_t nodeId, tinygltf::Node* node);
 	~Channel();
 
 	void addChild(Channel* child);
 	bool isAnimated();
-	int getKeyframePositionId(float animationTime);
-	int getKeyframeRotationId(float animationTime);
-	int getKeyframeScaleId(float animationTime);
+	int32_t getKeyframePositionId(float animationTime);
+	int32_t getKeyframeRotationId(float animationTime);
+	int32_t getKeyframeScaleId(float animationTime);
 	float getScaleFactor(float lastTimeStamp, float nextTimeStamp, float animationTime);
 	glm::mat4 getInterpolatedTranslation	(float animationTime);
 	glm::mat4 getInterpolatedRotation		(float animationTime);
 	glm::mat4 getInterpolatedScale			(float animationTime);
 	glm::mat4 getFinalTransformation		(float animationTime);
 
-	unsigned int getId();
+	uint32_t getId();
 	std::string getName();
 	glm::mat4 getLocalTransform();
 	std::vector<Channel*> getChildren();
@@ -51,7 +51,7 @@ public:
 
 private:
 	std::string name = "";
-	unsigned int id = -1;
+	uint32_t id = -1;
 	glm::mat4 localTransform;
 	glm::vec3 localTranslation;
 	glm::quat localRotation;
