@@ -47,7 +47,13 @@ void Animator::updateAnimation(float deltaTime)
 
         Renderer* renderer = Renderer::getInstance();
         GLProgram* program = renderer->useProgram(Renderer::Program::SKINNED_MESH);
-        program->setMatrixArrayUniform("finalBoneMatrices", &finalBoneMatrices);
+
+        GLuint ssbo;
+        glGenBuffers(1, &ssbo);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(finalBoneMatrices.at(0)) * finalBoneMatrices.size(), finalBoneMatrices.data(), GL_DYNAMIC_DRAW);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, ssbo);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     }
 }
 

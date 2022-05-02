@@ -6,6 +6,10 @@ layout(location = 2) in vec2 texCoords;
 layout(location = 3) in vec4 tangent;
 layout(location = 4) in ivec4 boneIds;
 layout(location = 5) in vec4 boneWeights;
+layout(std430, binding = 6) buffer matrixLayout
+{
+    mat4 finalBoneMatrices[];
+};
 
 uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
@@ -13,10 +17,6 @@ uniform mat4 uProjectionMatrix;
 uniform mat3 uNormalMatrix;
 uniform vec3 uCameraPos;
 uniform vec3 uLightPos;
-
-const int MAX_BONES = 100;  //TODO: Fix by SSBO
-const int MAX_BONE_INFLUENCE = 4;
-uniform mat4 finalBoneMatrices[MAX_BONES];
 
 out vec3 vNormal;
 out vec2 vTexCoords;

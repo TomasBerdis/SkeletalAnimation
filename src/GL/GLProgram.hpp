@@ -21,7 +21,6 @@ public:
 	template <typename T>
 	inline void setUniform(const GLchar* uniformName, T uniformValue)
 	{
-		use();
 		GLint uniformLocation = glGetUniformLocation(program, uniformName);
 		std::string typeName = typeid(T).name();
 

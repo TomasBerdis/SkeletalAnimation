@@ -31,10 +31,10 @@ public:
 
 protected:
 	std::vector<unsigned short> indices;
-	glm::mat4 globalTransform;
-	Renderer::Program programType;
+	glm::mat4 globalTransform = glm::mat4(1.0f);
+	Renderer::Program programType = Renderer::Program::MESH;
 	Material material;
-	GLuint vao, vbo, ebo;
+	GLuint vao = 0, vbo = 0, ebo = 0;
 	struct Vertex
 	{
 		glm::vec3	position;
