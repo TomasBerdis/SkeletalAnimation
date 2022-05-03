@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.18)
 project(SkeletalAnimation)
 
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
 set(CMAKE_CXX_STANDARD 20)
+set(BUILD_SHARED_LIBS OFF)
 
 # GLOB_RECURSE for recursive search
 FILE(GLOB_RECURSE cppSources src/*.cpp)
@@ -9,6 +11,19 @@ FILE(GLOB_RECURSE hppSources src/*.hpp)
 set(sources
     ${cppSources}
     ${hppSources}
+)
+
+add_executable(${PROJECT_NAME} ${sources})
+add_subdirectory(vendor/SDL2)
+target_include_directories(${PROJECT_NAME}
+    PUBLIC ${CMAKE_CURRENT_LIST_DIR}/3rd/include
+    PUBLIC /vendor/SDL2/include
+)
+target_link_libraries(${PROJECT_NAME}
+    SDL2main
+    SDL2-static
+    ${CMAKE_CURRENT_LIST_DIR}/3rd/lib/GLEW/glew32s.lib
+    opengl32.lib
 )
 
 # shaders
@@ -95,15 +110,6 @@ find_file(taunt taunt.glb
     HINTS ${CMAKE_CURRENT_LIST_DIR}/res/animations
 )
 
-add_executable(${PROJECT_NAME} ${sources})
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/3rd/include)
-target_link_libraries(${PROJECT_NAME}
-    ${CMAKE_CURRENT_LIST_DIR}/3rd/lib/SDL2/SDL2maind.lib
-    ${CMAKE_CURRENT_LIST_DIR}/3rd/lib/SDL2/SDL2d.lib
-    ${CMAKE_CURRENT_LIST_DIR}/3rd/lib/GLEW/glew32s.lib
-    #${CMAKE_CURRENT_LIST_DIR}/3rd/lib/SDL2/SDL2-staticd.lib
-    opengl32.lib
-)
 target_compile_definitions(${PROJECT_NAME} PUBLIC "DEBUG_VS=\"${debugVS}\"" "DEBUG_FS=\"${debugFS}\"" "MESH_VS=\"${meshVS}\"" "MESH_FS=\"${meshFS}\"" "SKINNED_MESH_VS=\"${skinnedMeshVS}\"" "SKINNED_MESH_FS=\"${skinnedMeshFS}\"")
 target_compile_definitions(${PROJECT_NAME} PUBLIC "MODEL_ALEX=\"${alex}\"" "MODEL_GASMASK=\"${gasmask}\"" "MODEL_KACHUJIN=\"${kachujin}\"" "MODEL_MAW=\"${maw}\"" "MODEL_NINJA=\"${ninja}\"" "MODEL_PALADIN=\"${paladin}\"" "MODEL_VAMPIRE=\"${vampire}\"" "MODEL_WHALE=\"${whale}\"")
 target_compile_definitions(${PROJECT_NAME} PUBLIC "MODEL_CUBE=\"${cube}\"" "MODEL_PLANE=\"${plane}\"" "MODEL_SPHERE=\"${sphere}\"")
