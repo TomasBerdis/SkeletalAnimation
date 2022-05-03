@@ -1,9 +1,9 @@
 #pragma once
 
-#include "GLEW/glew.h"
+#include "glew.h"
 #include "SDL.h"
-#include "glm/glm.hpp"
-#include <glm/gtc/type_ptr.hpp>
+#include "glm.hpp"
+#include <gtc/type_ptr.hpp>
 
 #include <iostream>
 #include <vector>

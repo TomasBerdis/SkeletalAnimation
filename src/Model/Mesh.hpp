@@ -1,11 +1,10 @@
 #pragma once
 
-#include "../GltfUtil.hpp"
-#include "GLEW/glew.h"
-#include "SDL_opengl.h"
-#include "glm/glm.hpp"
 #include "../Renderer.hpp"
 #include "../GL/GLProgram.hpp"
+#include "../GltfUtil.hpp"
+#include "SDL_opengl.h"
+#include "glm.hpp"
 
 #include <stdlib.h>
 #include <string.h>

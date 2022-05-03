@@ -14,15 +14,18 @@ set(sources
 )
 
 add_executable(${PROJECT_NAME} ${sources})
+add_subdirectory(vendor/glew)
 add_subdirectory(vendor/SDL2)
 target_include_directories(${PROJECT_NAME}
-    PUBLIC ${CMAKE_CURRENT_LIST_DIR}/3rd/include
-    PUBLIC /vendor/SDL2/include
+    PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor/glew/include/GL
+    PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor/glm/include
+    PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor/SDL2/include
+    PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor/tinyGLTF/include
 )
 target_link_libraries(${PROJECT_NAME}
+    libglew_static
     SDL2main
     SDL2-static
-    ${CMAKE_CURRENT_LIST_DIR}/3rd/lib/GLEW/glew32s.lib
     opengl32.lib
 )
 

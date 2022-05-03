@@ -1,12 +1,13 @@
 #pragma once
 
+#include "glew.h"
 #include "GL/GLProgram.hpp"
 #include "Camera.hpp"
 
 #include <map>
 #include <iostream>
-#include "tinyGLTF/tiny_gltf.h"
-#include "tinyGLTF/stb_image.h"
+#include "tiny_gltf.h"
+#include "stb_image.h"
 
 struct Texture
 {

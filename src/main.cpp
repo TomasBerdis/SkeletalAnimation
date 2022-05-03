@@ -6,7 +6,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 // #define TINYGLTF_NOEXCEPTION // optional. disable exception handling.
-#include "tinyGLTF/tiny_gltf.h"
+#include "tiny_gltf.h"
 
 #define MEASURE(code)   __measureStartTime__ = SDL_GetTicks(); \
 std::cout << "###MEASURE_START:\nFILE:" << __FILE__ << '\n' << "LINE: " << __LINE__ << '\n'; \
