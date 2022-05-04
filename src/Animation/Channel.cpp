@@ -42,6 +42,7 @@ int32_t Channel::getKeyframePositionId(float animationTime)
 		if (animationTime < keyframePositions->at(i + 1).timeStamp)
 			return i;
 	}
+	return -1;
 }
 
 int32_t Channel::getKeyframeRotationId(float animationTime)
@@ -51,6 +52,7 @@ int32_t Channel::getKeyframeRotationId(float animationTime)
 		if (animationTime < keyframeRotations->at(i + 1).timeStamp)
 			return i;
 	}
+	return -1;
 }
 
 int32_t Channel::getKeyframeScaleId(float animationTime)
@@ -60,6 +62,7 @@ int32_t Channel::getKeyframeScaleId(float animationTime)
 		if (animationTime < keyframeScales->at(i + 1).timeStamp)
 			return i;
 	}
+	return -1;
 }
 
 float Channel::getScaleFactor(const float lastTimeStamp, const float nextTimeStamp, const float animationTime)
