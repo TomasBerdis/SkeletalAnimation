@@ -1,9 +1,11 @@
 #pragma once
 
-#define GLEW_STATIC
 #include "glew.h"
 #include "SDL.h"
 #include "SDL_opengl.h"
+#include "imgui.h"
+#include "imgui_impl_sdl.h"
+#include "imgui_impl_opengl3.h"
 
 #include "GL/GLProgram.hpp"
 #include "Camera.hpp"

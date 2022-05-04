@@ -16,6 +16,20 @@ set(sources
 add_executable(${PROJECT_NAME} ${sources})
 add_subdirectory(vendor/glew)
 add_subdirectory(vendor/SDL2)
+add_library(imgui
+    # Main Imgui files
+    vendor/imgui/imgui.cpp vendor/imgui/imgui_draw.cpp
+    vendor/imgui/imgui_tables.cpp vendor/imgui/imgui_widgets.cpp
+    # SDL2+OpenGL-specific files
+    vendor/imgui/backends/imgui_impl_sdl.cpp
+    vendor/imgui/backends/imgui_impl_opengl3.cpp)
+# Make SDL2 available to Imgui
+target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor/SDL2/include)
+# imgui/backends/ contains the SDL implementation
+target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor/imgui/ ${CMAKE_CURRENT_LIST_DIR}/vendor/imgui/backends/)
+# Configure Imgui to use OpengGL through SDL2
+target_compile_definitions(imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_CUSTOM=<SDL_opengl.h>  GL_GLEXT_PROTOTYPES=1)
+
 target_include_directories(${PROJECT_NAME}
     PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor/glew/include/GL
     PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor/glm/include
@@ -27,6 +41,7 @@ target_link_libraries(${PROJECT_NAME}
     SDL2main
     SDL2-static
     opengl32.lib
+    imgui
 )
 
 # shaders
