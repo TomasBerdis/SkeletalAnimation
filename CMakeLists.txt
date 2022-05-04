@@ -135,3 +135,19 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC "ANIMATION_CRAWLING=\"${crawli
 target_compile_definitions(${PROJECT_NAME} PUBLIC "DEBUG_TEXTURE=\"${debugTexture}\"")
 
 SET_PROPERTY(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+
+FILE(GLOB animFiles res/animations/*)
+FILE(GLOB imageFiles res/images/*)
+FILE(GLOB modelFiles res/models/*)
+
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+install(FILES ${animFiles} DESTINATION res/animations)
+install(FILES ${imageFiles} DESTINATION res/images)
+install(FILES ${modelFiles} DESTINATION res/models)
+
+include(InstallRequiredSystemLibraries)
+set(CPACK_PACKAGE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/installers)
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
+set(CPACK_PACKAGE_VERSION_MAJOR "1")
+set(CPACK_PACKAGE_VERSION_MINOR "0")
+include(CPack)
