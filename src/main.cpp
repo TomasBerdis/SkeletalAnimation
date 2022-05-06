@@ -11,7 +11,10 @@
 #define MEASURE(code)   __measureStartTime__ = SDL_GetTicks(); \
 std::cout << "###MEASURE_START:\nFILE:" << __FILE__ << '\n' << "LINE: " << __LINE__ << '\n'; \
 code std::cout << "Execution time: " << (SDL_GetTicks() - __measureStartTime__) << "ms\n###MEASURE_END\n";
- 
+
+#define STR_EXPAND(tok) #tok
+#define STR(tok) STR_EXPAND(tok)
+
 int32_t main(int32_t argc, char **argv)
 {
     initialize();
@@ -30,7 +33,9 @@ void initialize()
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_OPENGL);
 
     // OpenGL
+#ifdef DEBUG_BUILD
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+#endif // DEBUG_BUILD
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -67,13 +72,13 @@ void initialize()
     Renderer *renderer = Renderer::getInstance();
     renderer->setCamera(camera);
 
-    groundPlane  = new Model(MODEL_PLANE);
+    groundPlane  = new Model(R"(..\res\models\plane.glb)");
     groundPlane->scale({ 5.f, 5.f, 5.f });
     groundPlane->rotate(glm::quat(0.7071f, 0.7071f, 0.0f, 0.0f));
     groundPlane->updateProgramType(Renderer::Program::DEBUG);
 
-    model       = new SkinnedModel(MODEL_ALEX);
-    animation   = new Animation(MODEL_ALEX);
+    model       = new SkinnedModel(R"(..\res\models\alex.glb)");
+    animation   = new Animation(R"(..\res\models\alex.glb)");
     animator    = new Animator((SkinnedModel*) model, animation);
 }
 

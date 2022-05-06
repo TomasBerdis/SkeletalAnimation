@@ -6,7 +6,7 @@ const std::string Renderer::debugTexture = "debugTexture.png";
 Renderer::Renderer()
 {
 	programMap.clear();
-	loadTexture(DEBUG_TEXTURE);
+	loadTexture("../res/images/debugTexture.png");
 }
 
 Renderer::~Renderer()
@@ -52,13 +52,13 @@ void Renderer::createProgram(Program programId)
 	switch (programId)
 	{
 		case Renderer::Program::MESH:
-			program = new GLProgram({ MESH_VS, MESH_FS });
+			program = new GLProgram({ "../shaders/meshVS.glsl", "../shaders/meshFS.glsl" });
 			break;
 		case Renderer::Program::SKINNED_MESH:
-			program = new GLProgram({ SKINNED_MESH_VS, SKINNED_MESH_FS });
+			program = new GLProgram({ "../shaders/skinnedMeshVS.glsl", "../shaders/skinnedMeshFS.glsl" });
 			break;
 		case Renderer::Program::DEBUG:
-			program = new GLProgram({ DEBUG_VS, DEBUG_FS });
+			program = new GLProgram({ "../shaders/debugVS.glsl", "../shaders/debugFS.glsl" });
 			break;
 		default:
 			std::cerr << "Renderer: Cannot create unexisting program" << '\n';
