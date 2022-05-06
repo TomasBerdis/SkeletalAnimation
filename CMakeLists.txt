@@ -43,8 +43,9 @@ add_library(imgui
     vendor/imgui/backends/imgui_impl_opengl3.cpp
 )
 target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor/SDL2/include)
+target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor/glew/include/GL)
 target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor/imgui/ ${CMAKE_CURRENT_LIST_DIR}/vendor/imgui/backends/)
-target_compile_definitions(imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_CUSTOM=<SDL_opengl.h>  GL_GLEXT_PROTOTYPES=1)
+target_compile_definitions(imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_CUSTOM=<glew.h>  GL_GLEXT_PROTOTYPES=1)
 
 # INCLUDES
 target_include_directories(${PROJECT_NAME}

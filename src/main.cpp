@@ -41,7 +41,7 @@ void initialize()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-    SDL_GLContext context = SDL_GL_CreateContext(window);
+    context = SDL_GL_CreateContext(window);
     printf("%s\n", glGetString(GL_VERSION));
 
     // Initialize GLEW
@@ -63,6 +63,19 @@ void initialize()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // ImGui
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+    //io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    ImGui::StyleColorsDark();
+
+    ImGui_ImplSDL2_InitForOpenGL(window, context);
+    ImGui_ImplOpenGL3_Init("#version 430 core");
 
     // Camera
     camera = new Camera(glm::vec3(0.0f, 2.0f, 3.0f), 45, (float) screenWidth / (float) screenHeight, 0.1f, 1000.0f);
@@ -100,6 +113,12 @@ void run()
 
 void cleanup()
 {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
+
+    SDL_GL_DeleteContext(context);
+    SDL_DestroyWindow(window);
     SDL_Quit();
 }
 
@@ -109,6 +128,7 @@ void processInput()
 
     while (SDL_PollEvent(&event) > 0)
     {
+        ImGui_ImplSDL2_ProcessEvent(&event);
         switch (event.type)
         {
             case SDL_QUIT:
@@ -204,12 +224,19 @@ void simulate()
 
 void render()
 {
+    //ImGui
+    initGui();
+
     glClearColor(0.0f, 0.5f, 0.5f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // render calls
     model->render();
     groundPlane->render();
+
+    //ImGui
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     SDL_GL_SwapWindow(window);
 }
@@ -251,5 +278,58 @@ static void APIENTRY glDebugOutputCallback(GLenum source, GLenum type, uint32_t 
         case GL_DEBUG_SEVERITY_MEDIUM:       printf("Medium\n");        break;
         case GL_DEBUG_SEVERITY_LOW:          printf("Low\n");           break;
         case GL_DEBUG_SEVERITY_NOTIFICATION: printf("Notification\n");  break;
+    }
+}
+
+void initGui()
+{
+    // Start the Dear ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplSDL2_NewFrame();
+    ImGui::NewFrame();
+
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.FrameRounding = 10.0f;
+    style.GrabRounding = 10.0f;
+    style.Colors[ImGuiCol_FrameBg] = ImVec4(0.160, 0.480, 0.199, 0.540);
+    style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.160, 0.480, 0.199, 0.540);
+    style.Colors[ImGuiCol_CheckMark] = ImVec4(0.353, 0.880, 0.240, 1.000);
+    style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.353, 0.880, 0.240, 1.000);
+
+    {
+        static float f = 0.0f;
+        static int counter = 0;
+
+        ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+        ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+
+        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+
+        if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+            counter++;
+        ImGui::SameLine();
+        ImGui::Text("counter = %d", counter);
+
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::End();
+    }
+    {
+        static float f = 0.0f;
+        static int counter = 0;
+
+        ImGui::Begin("Hello, worldd!");                          // Create a window called "Hello, world!" and append into it.
+
+        ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+
+        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+
+        if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+            counter++;
+        ImGui::SameLine();
+        ImGui::Text("counter = %d", counter);
+
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::End();
     }
 }

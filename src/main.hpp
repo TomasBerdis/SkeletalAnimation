@@ -22,10 +22,12 @@ void simulate();
 void render();
 static void glDebugOutputCallback(GLenum source, GLenum type, uint32_t id, GLenum severity, GLsizei length,
     const char *message, const void *userParam);
+void initGui();
 
 bool quit = false;
 int32_t screenWidth = 1280;
 int32_t screenHeight = 768;
+SDL_GLContext context;
 SDL_Event event;
 SDL_Window* window;
 Camera* camera;
@@ -41,3 +43,5 @@ bool firstMouse = true;
 bool mouseRightButtonDown = false;
 float lastFrameDurationInSec = 0.0f;
 uint32_t __measureStartTime__;
+
+//ImGui
