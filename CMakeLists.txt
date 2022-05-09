@@ -60,7 +60,6 @@ target_link_libraries(${PROJECT_NAME}
     libglew_static
     SDL2main
     SDL2-static
-    opengl32.lib
     imgui
 )
 

@@ -241,7 +241,7 @@ void render()
     SDL_GL_SwapWindow(window);
 }
 
-static void APIENTRY glDebugOutputCallback(GLenum source, GLenum type, uint32_t id, GLenum severity, GLsizei length,
+static void glDebugOutputCallback(GLenum source, GLenum type, uint32_t id, GLenum severity, GLsizei length,
     const char *message, const void *userParam)
 {
     printf("Debug message: id %d, %s \n", id, message);
