@@ -42,11 +42,13 @@ void initialize()
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
     context = SDL_GL_CreateContext(window);
+    if (context == nullptr)
+        fprintf(stderr, "Failed to initialize OpenGL context.\n");
     printf("%s\n", glGetString(GL_VERSION));
 
     // Initialize GLEW
     if (glewInit() != GLEW_OK)
-        fprintf(stderr, "Failed to initialize GLEW\n");
+        fprintf(stderr, "Failed to initialize GLEW.\n");
 
     int32_t contextFlags = 0;
     glGetIntegerv(GL_CONTEXT_FLAGS, &contextFlags);
@@ -85,13 +87,13 @@ void initialize()
     Renderer *renderer = Renderer::getInstance();
     renderer->setCamera(camera);
 
-    groundPlane  = new Model(R"(..\res\models\plane.glb)");
+    groundPlane  = new Model(R"(../res/models/plane.glb)");
     groundPlane->scale({ 5.f, 5.f, 5.f });
     groundPlane->rotate(glm::quat(0.7071f, 0.7071f, 0.0f, 0.0f));
     groundPlane->updateProgramType(Renderer::Program::DEBUG);
 
-    model       = new SkinnedModel(R"(..\res\models\alex.glb)");
-    animation   = new Animation(R"(..\res\models\alex.glb)");
+    model       = new SkinnedModel(R"(../res/models/alex.glb)");
+    animation   = new Animation(R"(../res/models/alex.glb)");
     animator    = new Animator((SkinnedModel*) model, animation);
 }
 
