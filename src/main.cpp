@@ -298,6 +298,26 @@ void initGui()
     style.Colors[ImGuiCol_CheckMark] = ImVec4(0.353, 0.880, 0.240, 1.000);
     style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.353, 0.880, 0.240, 1.000);
 
+    // open Dialog Simple
+    if (ImGui::Button("Open File Dialog"))
+        ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".glb,.gltf", "../res/");
+
+    // display
+    if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"))
+    {
+        // action if OK
+        if (ImGuiFileDialog::Instance()->IsOk())
+        {
+            std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+            std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+            std::cout << "filePathName: " << filePathName << '\n';
+            std::cout << "filePath: " << filePath << '\n';
+        }
+
+        // close
+        ImGuiFileDialog::Instance()->Close();
+    }
+
     {
         static float f = 0.0f;
         static int counter = 0;
