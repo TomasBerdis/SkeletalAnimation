@@ -2,13 +2,25 @@
 
 Model::Model(const std::string path)
 {
-	gltfUtil::loadFile(path, &loadedModel);
+	tinygltf::Model file;
+	gltfUtil::loadFile(path, &file);
+	loadedModel = &file;
+
 	loadTextures();
 
-	const int32_t startingNodeId = loadedModel.scenes[loadedModel.defaultScene].nodes[0];
-	processNode(&loadedModel.nodes[startingNodeId], glm::mat4 {1.0f});
+	const int32_t startingNodeId = loadedModel->scenes[loadedModel->defaultScene].nodes[0];
+	processNode(&loadedModel->nodes[startingNodeId], glm::mat4 {1.0f});
+}
 
-	loadedModel.~Model();
+Model::Model(tinygltf::Model* const file)
+{
+	loadedModel = file;
+	loadTextures();
+
+	const int32_t startingNodeId = loadedModel->scenes[loadedModel->defaultScene].nodes[0];
+	processNode(&loadedModel->nodes[startingNodeId], glm::mat4{ 1.0f });
+
+	// Destructor called outside
 }
 
 Model::~Model()
@@ -18,7 +30,7 @@ Model::~Model()
 void Model::loadTextures()
 {
 	Renderer* renderer = Renderer::getInstance();
-	std::ranges::for_each(loadedModel.images, [&](tinygltf::Image i) { renderer->loadTexture(&i); });
+	std::ranges::for_each(loadedModel->images, [&](tinygltf::Image i) { renderer->loadTexture(&i); });
 }
 
 void Model::processNode(const tinygltf::Node* const node, const glm::mat4 parentTransform)
@@ -27,15 +39,15 @@ void Model::processNode(const tinygltf::Node* const node, const glm::mat4 parent
 
 	if (node->mesh > -1)
 	{
-		tinygltf::Mesh* meshPtr = &loadedModel.meshes[node->mesh];
+		tinygltf::Mesh* meshPtr = &loadedModel->meshes[node->mesh];
 		for (size_t i = 0; i < meshPtr->primitives.size(); i++)
 		{
-			Mesh* mesh = new Mesh(&meshPtr->primitives[i], &loadedModel, nodeGlobalTransform);
+			Mesh* mesh = new Mesh(&meshPtr->primitives[i], loadedModel, nodeGlobalTransform);
 			meshes.push_back(mesh);
 		}
 	}
 
-	std::ranges::for_each(node->children, [&](int32_t i) { processNode(&loadedModel.nodes[i], nodeGlobalTransform); });
+	std::ranges::for_each(node->children, [&](int32_t i) { processNode(&loadedModel->nodes[i], nodeGlobalTransform); });
 }
 
 void Model::render()

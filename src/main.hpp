@@ -24,6 +24,7 @@ void render();
 static void glDebugOutputCallback(GLenum source, GLenum type, uint32_t id, GLenum severity, GLsizei length,
     const char *message, const void *userParam);
 void initGui();
+void parseFile(std::string path);
 
 bool quit = false;
 int32_t screenWidth = 1280;
@@ -36,7 +37,10 @@ Model* model;
 Model* groundPlane;
 Animation* animation;
 Animator* animator;
-
+std::map<std::string, Model*> models;
+std::map<std::string, Animation*> animations;
+std::string selectedModel;
+std::string selectedAnimation;
 
 float mouseLastX = screenWidth / 2.0f;
 float mouseLastY = screenHeight / 2.0f;
@@ -44,5 +48,3 @@ bool firstMouse = true;
 bool mouseRightButtonDown = false;
 float lastFrameDurationInSec = 0.0f;
 uint32_t __measureStartTime__;
-
-//ImGui
