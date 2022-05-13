@@ -37,10 +37,10 @@ Model* model;
 Model* groundPlane;
 Animation* animation;
 Animator* animator;
-std::map<std::string, Model*> models;
-std::map<std::string, Animation*> animations;
-std::string selectedModel;
-std::string selectedAnimation;
+std::unordered_map<std::string, Model*> models;
+std::unordered_map<std::string, Animation*> animations;
+std::string selectedModelName;
+std::string selectedAnimationName;
 
 float mouseLastX = screenWidth / 2.0f;
 float mouseLastY = screenHeight / 2.0f;

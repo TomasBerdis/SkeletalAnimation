@@ -92,15 +92,22 @@ void initialize()
     groundPlane->rotate(glm::quat(0.7071f, 0.7071f, 0.0f, 0.0f));
     groundPlane->updateProgramType(Renderer::Program::DEBUG);
 
-    model       = new SkinnedModel(R"(../res/models/alex.glb)");
-    animation   = new Animation(R"(../res/models/alex.glb)");
-    animator    = new Animator((SkinnedModel*) model, animation);
+    // Load "../res/" directory models and animations
+    for (const auto& file : std::filesystem::directory_iterator("../res/models"))
+    {
+        if (!std::filesystem::is_directory(file))
+            parseFile(file.path().string());
+    }
+    for (const auto& file : std::filesystem::directory_iterator("../res/animations"))
+    {
+        if (!std::filesystem::is_directory(file))
+            parseFile(file.path().string());
+    }
 
-    parseFile(R"(../res/models/alex.glb)");
-    parseFile(R"(../res/models/maw.glb)");
-    parseFile(R"(../res/animations/dying.glb)");
-    parseFile(R"(../res/models/cube.glb)");
-    selectedModel = "alex.glb";
+    selectedModelName       = models.begin()->first;
+    selectedAnimationName   = animations.begin()->first;
+    model = models.begin()->second;
+    animator = new Animator((SkinnedModel*) model, animations.begin()->second);
 }
 
 void run()
@@ -121,6 +128,11 @@ void run()
 
 void cleanup()
 {
+    for (const auto & i : models)
+        i.second->~Model();
+    for (const auto& i : animations)
+        i.second->~Animation();
+
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
@@ -315,13 +327,13 @@ void initGui()
 
     {
         ImGui::Text("Models:");
-        if (ImGui::BeginListBox("##listbox 1", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
+        if (ImGui::BeginListBox("##listbox 1", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
         {
             for (const auto &item : models)
             {
-                const bool isSelected = (selectedModel == item.first.c_str());
+                const bool isSelected = (selectedModelName == item.first.c_str());
                 if (ImGui::Selectable(item.first.c_str(), isSelected))
-                    selectedModel = item.first;
+                    selectedModelName = item.first;
 
                 // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                 if (isSelected)
@@ -331,19 +343,25 @@ void initGui()
         }
 
         ImGui::Text("Animations:");
-        if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
+        if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
         {
             for (const auto& item : animations)
             {
-                const bool isSelected = (selectedAnimation == item.first.c_str());
+                const bool isSelected = (selectedAnimationName == item.first.c_str());
                 if (ImGui::Selectable(item.first.c_str(), isSelected))
-                    selectedAnimation = item.first;
+                    selectedAnimationName = item.first;
 
                 // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                 if (isSelected)
                     ImGui::SetItemDefaultFocus();
             }
             ImGui::EndListBox();
+        }
+
+        if (ImGui::Button("Change"))
+        {
+            model = models[selectedModelName];
+            animator->setActor((SkinnedModel*) model, animations[selectedAnimationName]);
         }
 
         // open Dialog Simple
@@ -357,14 +375,19 @@ void parseFile(std::string path)
     // Load file
     tinygltf::Model file;
     gltfUtil::loadFile(path, &file);
-    int32_t pos = path.find_last_of("/") + 1;
-    if (pos == 0)
-        pos = path.find_last_of("\\") + 1;
+
+    const int32_t backSlashPos = path.find_last_of("\\") + 1;
+    const int32_t forwSlashPos = path.find_last_of("/") + 1;
+    const int32_t pos = std::max(backSlashPos, forwSlashPos);
     std::string fileName = path.substr(pos, path.length() - pos);
 
     // Determine contents of the file
+    bool hasMeshes = false;
     bool hasSkin = false;
     bool hasAnimations = false;
+
+    if (!file.meshes.empty())
+        hasMeshes = true;
 
     if (!file.skins.empty())
         hasSkin = true;
@@ -373,12 +396,12 @@ void parseFile(std::string path)
         hasAnimations = true;
 
     // Parse data
-    if (hasSkin)
+    if (hasMeshes && hasSkin)
     {
         SkinnedModel* model = new SkinnedModel(&file);
         models[fileName] = model;
     }
-    else
+    else if (hasMeshes)
     {
         Model* model = new Model(&file);
         models[fileName] = model;
@@ -389,7 +412,7 @@ void parseFile(std::string path)
         for (size_t i = 0; i < file.animations.size(); i++)
         {
             Animation* animation = new Animation(&file, i);
-            animations[file.animations[i].name] = animation;
+            animations[fileName + " || " + file.animations[i].name] = animation;
         }
     }
 }
