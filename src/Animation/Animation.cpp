@@ -2,23 +2,45 @@
 
 Animation::Animation(std::string path)
 {
-	gltfUtil::loadFile(path, &loadedAnimation);
-	name = loadedAnimation.animations[0].name;
+	tinygltf::Model file;
+	gltfUtil::loadFile(path, &file);
+	loadedAnimation = &file;
+
+	name = loadedAnimation->animations[0].name;
 
 	// WARNING: Assuming a lot of things here
-	timeAccessor = loadedAnimation.animations[0].samplers[0].input;
+	timeAccessor = loadedAnimation->animations[0].samplers[0].input;
 	calculateDuration();
 	calculateTicksPerSecond();
 
 	// Load node heirarchy
-	const int32_t startingNodeId = currentId = loadedAnimation.scenes[loadedAnimation.defaultScene].nodes[0];
-	processNode(&loadedAnimation.nodes[startingNodeId], nullptr);
+	const int32_t startingNodeId = currentId = loadedAnimation->scenes[loadedAnimation->defaultScene].nodes[0];
+	processNode(&loadedAnimation->nodes[startingNodeId], nullptr);
+
+	// Load keyframe data
+	loadKeyframes();
+}
+
+Animation::Animation(tinygltf::Model* const file, int32_t animationId)
+{
+	loadedAnimation = file;
+	this->animationId = animationId;
+
+	name = loadedAnimation->animations[animationId].name;
+
+	// WARNING: Assuming a lot of things here
+	timeAccessor = loadedAnimation->animations[animationId].samplers[0].input;
+	calculateDuration();
+	calculateTicksPerSecond();
+
+	// Load node heirarchy
+	const int32_t startingNodeId = currentId = loadedAnimation->scenes[loadedAnimation->defaultScene].nodes[0];
+	processNode(&loadedAnimation->nodes[startingNodeId], nullptr);
 
 	// Load keyframe data
 	loadKeyframes();
 
-	// Clean intermediate file data
-	loadedAnimation.~Model();
+	// Destructor called outside
 }
  
 Animation::~Animation()
@@ -27,13 +49,13 @@ Animation::~Animation()
 
 void Animation::calculateDuration()
 {
-	duration = std::ranges::max(loadedAnimation.accessors[timeAccessor].maxValues);
+	duration = std::ranges::max(loadedAnimation->accessors[timeAccessor].maxValues);
 }
 
 void Animation::calculateTicksPerSecond()
 {
 	int32_t bytes;
-	float* timePtr = (float*) gltfUtil::getDataPtr(&bytes, timeAccessor, &loadedAnimation);
+	float* timePtr = (float*) gltfUtil::getDataPtr(&bytes, timeAccessor, loadedAnimation);
 	const int32_t frames = bytes / sizeof(float);
 	ticksPerSecond = frames / duration;
 }
@@ -84,15 +106,15 @@ void Animation::processNode(const tinygltf::Node* const node, Channel* const par
 	std::ranges::for_each(node->children, [&](int32_t i)
 	{
 		currentId = i;
-		processNode(&loadedAnimation.nodes[i], thisNode);
+		processNode(&loadedAnimation->nodes[i], thisNode);
 	});
 }
 
 void Animation::loadKeyframes()
 {
-	std::ranges::for_each(loadedAnimation.animations[0].channels, [&](tinygltf::AnimationChannel animChannel)
+	std::ranges::for_each(loadedAnimation->animations[animationId].channels, [&](tinygltf::AnimationChannel animChannel)
 	{
-		tinygltf::AnimationSampler* sampler = &loadedAnimation.animations[0].samplers[animChannel.sampler];
+		tinygltf::AnimationSampler* sampler = &loadedAnimation->animations[animationId].samplers[animChannel.sampler];
 		const int32_t timeAccessorId = sampler->input;
 		const int32_t valueAccessorId = sampler->output;
 		auto channel = std::ranges::find_if(channels, [&](Channel* ch) { return ch->getId() == animChannel.target_node; });
@@ -100,8 +122,8 @@ void Animation::loadKeyframes()
 		if (animChannel.target_path == "translation")
 		{
 			int32_t bytes;
-			float* timePtr			= (float*) gltfUtil::getDataPtr(NULL, timeAccessorId, &loadedAnimation);
-			float* translationPtr	= (float*) gltfUtil::getDataPtr(&bytes, valueAccessorId, &loadedAnimation);
+			float* timePtr			= (float*) gltfUtil::getDataPtr(NULL, timeAccessorId, loadedAnimation);
+			float* translationPtr	= (float*) gltfUtil::getDataPtr(&bytes, valueAccessorId, loadedAnimation);
 			// calculate how many keyframes to load
 			const int32_t count = (bytes / sizeof(float)) / 3;	// number of struct elements = 3
 
@@ -120,8 +142,8 @@ void Animation::loadKeyframes()
 		else if (animChannel.target_path == "rotation")
 		{
 			int32_t bytes;
-			float* timePtr		= (float*) gltfUtil::getDataPtr(NULL, timeAccessorId, &loadedAnimation);
-			float* rotationPtr	= (float*) gltfUtil::getDataPtr(&bytes, valueAccessorId, &loadedAnimation);
+			float* timePtr		= (float*) gltfUtil::getDataPtr(NULL, timeAccessorId, loadedAnimation);
+			float* rotationPtr	= (float*) gltfUtil::getDataPtr(&bytes, valueAccessorId, loadedAnimation);
 			// calculate how many keyframes to load
 			const int32_t count = (bytes / sizeof(float)) / 4;	// number of struct elements = 4
 
@@ -142,8 +164,8 @@ void Animation::loadKeyframes()
 		else if (animChannel.target_path == "scale")
 		{
 			int32_t bytes;
-			float* timePtr			= (float*) gltfUtil::getDataPtr(NULL, timeAccessorId, &loadedAnimation);
-			float* scalingPtr		= (float*) gltfUtil::getDataPtr(&bytes, valueAccessorId, &loadedAnimation);
+			float* timePtr			= (float*) gltfUtil::getDataPtr(NULL, timeAccessorId, loadedAnimation);
+			float* scalingPtr		= (float*) gltfUtil::getDataPtr(&bytes, valueAccessorId, loadedAnimation);
 			// calculate how many keyframes to load
 			const int32_t count		= (bytes / sizeof(float)) / 3;	// number of struct elements = 3
 

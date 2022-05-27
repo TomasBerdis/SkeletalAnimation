@@ -16,6 +16,9 @@ Animator::~Animator()
 
 void Animator::setActor(SkinnedModel* const model, Animation* const animation)
 {
+    if (this->model == model && this->animation == animation)
+        return;
+
 	this->model = model;
 	this->animation = animation;
     if (checkCompatibility() != true)
@@ -61,6 +64,7 @@ void Animator::updateAnimation(float deltaTime)
 bool Animator::checkCompatibility()
 {
     std::vector<Bone>* armature = model->getArmature();
+    armatureToAnimationMap.clear();
     for (size_t i = 0; i < armature->size(); i++)
     {
         const int32_t id = animation->getChannelIdByName(armature->at(i).name);

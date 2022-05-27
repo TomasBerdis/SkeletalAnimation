@@ -11,6 +11,7 @@ class Animation
 {
 public:
 	Animation(std::string path);
+	Animation(tinygltf::Model* const file, int32_t animationId);
 	~Animation();
 
 	void calculateDuration();
@@ -25,7 +26,8 @@ public:
 	void calculateBoneTransformations(std::vector<glm::mat4>* boneMatrices, const float animationTime, const glm::mat4 parentTransform, Channel* node);
 
 private:
-	tinygltf::Model loadedAnimation;
+	tinygltf::Model* loadedAnimation;
+	int32_t animationId = 0;
 	std::string name;
 	float duration = 0.0f;
 	int32_t ticksPerSecond = 0;

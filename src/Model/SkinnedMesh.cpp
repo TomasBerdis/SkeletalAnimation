@@ -130,7 +130,7 @@ void SkinnedMesh::render()
 	program->setUniform("uNormalMatrix", glm::transpose(glm::inverse(glm::mat3(1.0f))));
 
 	program->setUniform("uCameraPos", renderer->getCamera()->getPosition());
-	program->setUniform("uLightPos", glm::vec3{ 0.0f, 2.0f, 1.0f });
+	program->setUniform("uLightPos", glm::vec3{ 0.0f, 10.0f, 10.0f });
 	program->setUniform("uLightColor", glm::vec3{ 1.0f, 1.0f, 1.0f });
 
 	renderer->bindTexture(material.colorTexture, 0);

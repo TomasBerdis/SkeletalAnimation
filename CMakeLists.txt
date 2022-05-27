@@ -47,12 +47,23 @@ target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor/glew/in
 target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor/imgui/ ${CMAKE_CURRENT_LIST_DIR}/vendor/imgui/backends/)
 target_compile_definitions(imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_CUSTOM=<glew.h>  GL_GLEXT_PROTOTYPES=1)
 
+add_library(ImGuiFileDialog
+    vendor/ImGuiFileDialog/ImGuiFileDialog.cpp
+    vendor/ImGuiFileDialog/ImGuiFileDialog.h
+    vendor/ImGuiFileDialog/ImGuiFileDialogConfig.h
+)
+target_include_directories(ImGuiFileDialog PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor/imgui/ ${CMAKE_CURRENT_LIST_DIR}/vendor/imgui/backends/)
+target_include_directories(ImGuiFileDialog PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor/ImGuiFileDialog/dirent)
+target_include_directories(ImGuiFileDialog PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor/ImGuiFileDialog/stb)
+target_link_libraries(ImGuiFileDialog imgui)
+
 # INCLUDES
 target_include_directories(${PROJECT_NAME}
     PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor/glew/include/GL
     PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor/glm/include
     PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor/SDL2/include
     PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor/tinyGLTF/include
+    PUBLIC ${CMAKE_CURRENT_LIST_DIR}/vendor/ImGuiFileDialog
 )
 
 # LINKER
@@ -61,6 +72,7 @@ target_link_libraries(${PROJECT_NAME}
     SDL2main
     SDL2-static
     imgui
+    ImGuiFileDialog
 )
 
 # MACROS

@@ -92,9 +92,22 @@ void initialize()
     groundPlane->rotate(glm::quat(0.7071f, 0.7071f, 0.0f, 0.0f));
     groundPlane->updateProgramType(Renderer::Program::DEBUG);
 
-    model       = new SkinnedModel(R"(../res/models/alex.glb)");
-    animation   = new Animation(R"(../res/models/alex.glb)");
-    animator    = new Animator((SkinnedModel*) model, animation);
+    // Load "../res/" directory models and animations
+    for (const auto& file : std::filesystem::directory_iterator("../res/models"))
+    {
+        if (!std::filesystem::is_directory(file))
+            parseFile(file.path().string());
+    }
+    for (const auto& file : std::filesystem::directory_iterator("../res/animations"))
+    {
+        if (!std::filesystem::is_directory(file))
+            parseFile(file.path().string());
+    }
+
+    selectedModelName       = models.begin()->first;
+    selectedAnimationName   = animations.begin()->first;
+    model = models.begin()->second;
+    animator = new Animator((SkinnedModel*) model, animations.begin()->second);
 }
 
 void run()
@@ -115,6 +128,11 @@ void run()
 
 void cleanup()
 {
+    for (const auto & i : models)
+        i.second->~Model();
+    for (const auto& i : animations)
+        i.second->~Animation();
+
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
@@ -290,48 +308,111 @@ void initGui()
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
-    ImGuiStyle& style = ImGui::GetStyle();
-    style.FrameRounding = 10.0f;
-    style.GrabRounding = 10.0f;
-    style.Colors[ImGuiCol_FrameBg] = ImVec4(0.160, 0.480, 0.199, 0.540);
-    style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.160, 0.480, 0.199, 0.540);
-    style.Colors[ImGuiCol_CheckMark] = ImVec4(0.353, 0.880, 0.240, 1.000);
-    style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.353, 0.880, 0.240, 1.000);
-
+    // display
+    if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"))
     {
-        static float f = 0.0f;
-        static int counter = 0;
+        // action if OK
+        if (ImGuiFileDialog::Instance()->IsOk())
+        {
+            std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+            std::string filePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+            std::cout << "filePathName: " << filePathName << '\n';
+            std::cout << "filePath: " << filePath << '\n';
+            parseFile(filePathName);
+        }
 
-        ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-        ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-
-        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-
-        if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-            counter++;
-        ImGui::SameLine();
-        ImGui::Text("counter = %d", counter);
-
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-        ImGui::End();
+        // close
+        ImGuiFileDialog::Instance()->Close();
     }
+
     {
-        static float f = 0.0f;
-        static int counter = 0;
+        ImGui::Text("Models:");
+        if (ImGui::BeginListBox("##listbox 1", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
+        {
+            for (const auto &item : models)
+            {
+                const bool isSelected = (selectedModelName == item.first.c_str());
+                if (ImGui::Selectable(item.first.c_str(), isSelected))
+                    selectedModelName = item.first;
 
-        ImGui::Begin("Hello, worldd!");                          // Create a window called "Hello, world!" and append into it.
+                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                if (isSelected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndListBox();
+        }
 
-        ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+        ImGui::Text("Animations:");
+        if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
+        {
+            for (const auto& item : animations)
+            {
+                const bool isSelected = (selectedAnimationName == item.first.c_str());
+                if (ImGui::Selectable(item.first.c_str(), isSelected))
+                    selectedAnimationName = item.first;
 
-        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                if (isSelected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndListBox();
+        }
 
-        if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-            counter++;
-        ImGui::SameLine();
-        ImGui::Text("counter = %d", counter);
+        if (ImGui::Button("Change"))
+        {
+            model = models[selectedModelName];
+            animator->setActor((SkinnedModel*) model, animations[selectedAnimationName]);
+        }
 
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-        ImGui::End();
+        // open Dialog Simple
+        if (ImGui::Button("Open File Dialog"))
+            ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".glb,.gltf", "../res/");
+    }
+}
+
+void parseFile(std::string path)
+{
+    // Load file
+    tinygltf::Model file;
+    gltfUtil::loadFile(path, &file);
+
+    const int32_t backSlashPos = path.find_last_of("\\") + 1;
+    const int32_t forwSlashPos = path.find_last_of("/") + 1;
+    const int32_t pos = std::max(backSlashPos, forwSlashPos);
+    std::string fileName = path.substr(pos, path.length() - pos);
+
+    // Determine contents of the file
+    bool hasMeshes = false;
+    bool hasSkin = false;
+    bool hasAnimations = false;
+
+    if (!file.meshes.empty())
+        hasMeshes = true;
+
+    if (!file.skins.empty())
+        hasSkin = true;
+
+    if (!file.animations.empty())
+        hasAnimations = true;
+
+    // Parse data
+    if (hasMeshes && hasSkin)
+    {
+        SkinnedModel* model = new SkinnedModel(&file);
+        models[fileName] = model;
+    }
+    else if (hasMeshes)
+    {
+        Model* model = new Model(&file);
+        models[fileName] = model;
+    }
+
+    if (hasAnimations)
+    {
+        for (size_t i = 0; i < file.animations.size(); i++)
+        {
+            Animation* animation = new Animation(&file, i);
+            animations[fileName + " || " + file.animations[i].name] = animation;
+        }
     }
 }

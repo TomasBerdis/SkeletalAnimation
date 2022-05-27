@@ -10,6 +10,7 @@ class Model
 {
 public:
 	Model(const std::string path);
+	Model(tinygltf::Model* const file);
 	Model() {};
 	~Model();
 
@@ -23,7 +24,7 @@ public:
 
 
 protected:
-	tinygltf::Model loadedModel;
+	tinygltf::Model* loadedModel;
 
 	void loadTextures();
 	void updateMeshTransforms();

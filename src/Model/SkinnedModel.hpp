@@ -16,6 +16,7 @@ class SkinnedModel : public Model
 {
 public:
 	SkinnedModel(const std::string path);
+	SkinnedModel(tinygltf::Model* const file);
 
 	void render();
 	std::vector<Bone>* getArmature();
