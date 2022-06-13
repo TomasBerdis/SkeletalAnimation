@@ -22,7 +22,7 @@ class Mesh
 public:
 	Mesh(tinygltf::Primitive* const primitive, tinygltf::Model* const loadedModel, const glm::mat4 globalTransform);
 	Mesh() {};
-	~Mesh();
+	virtual ~Mesh();
 
 	void virtual render();
 	void updateGlobalTransform(const glm::mat4 matrix);

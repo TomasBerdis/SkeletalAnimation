@@ -31,6 +31,7 @@ void initialize()
 
     window = SDL_CreateWindow("Skeletal Animation demo",
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_OPENGL);
+    //SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
     // OpenGL
 #ifdef DEBUG_BUILD
@@ -87,7 +88,7 @@ void initialize()
     Renderer *renderer = Renderer::getInstance();
     renderer->setCamera(camera);
 
-    groundPlane  = new Model(R"(../res/models/plane.glb)");
+    groundPlane  = std::make_shared<Model>(R"(../res/models/plane.glb)");
     groundPlane->scale({ 5.f, 5.f, 5.f });
     groundPlane->rotate(glm::quat(0.7071f, 0.7071f, 0.0f, 0.0f));
     groundPlane->updateProgramType(Renderer::Program::DEBUG);
@@ -107,7 +108,7 @@ void initialize()
     selectedModelName       = models.begin()->first;
     selectedAnimationName   = animations.begin()->first;
     model = models.begin()->second;
-    animator = new Animator((SkinnedModel*) model, animations.begin()->second);
+    animator = new Animator((SkinnedModel*) model.get(), animations.begin()->second.get());
 }
 
 void run()
@@ -128,10 +129,16 @@ void run()
 
 void cleanup()
 {
-    for (const auto & i : models)
+    /*for (const auto & i : models)
         i.second->~Model();
     for (const auto& i : animations)
-        i.second->~Animation();
+        i.second->~Animation();*/
+
+    delete animator;
+    delete camera;
+
+    models.clear();
+    animations.clear();
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
@@ -247,7 +254,7 @@ void render()
     //ImGui
     initGui();
 
-    glClearColor(0.0f, 0.5f, 0.5f, 0.0f);
+    glClearColor(0.055, 0.18, 0.216, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // render calls
@@ -361,11 +368,11 @@ void initGui()
         if (ImGui::Button("Change"))
         {
             model = models[selectedModelName];
-            animator->setActor((SkinnedModel*) model, animations[selectedAnimationName]);
+            animator->setActor((SkinnedModel*) model.get(), animations[selectedAnimationName].get());
         }
 
         // open Dialog Simple
-        if (ImGui::Button("Open File Dialog"))
+        if (ImGui::Button("Import files..."))
             ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".glb,.gltf", "../res/");
     }
 }
@@ -398,12 +405,12 @@ void parseFile(std::string path)
     // Parse data
     if (hasMeshes && hasSkin)
     {
-        SkinnedModel* model = new SkinnedModel(&file);
+        std::shared_ptr<Model> model = std::make_shared<SkinnedModel>(&file);
         models[fileName] = model;
     }
     else if (hasMeshes)
     {
-        Model* model = new Model(&file);
+        std::shared_ptr<Model> model = std::make_shared<Model>(&file);
         models[fileName] = model;
     }
 
@@ -411,7 +418,7 @@ void parseFile(std::string path)
     {
         for (size_t i = 0; i < file.animations.size(); i++)
         {
-            Animation* animation = new Animation(&file, i);
+            std::shared_ptr<Animation> animation = std::make_shared<Animation>(&file, i);
             animations[fileName + " || " + file.animations[i].name] = animation;
         }
     }

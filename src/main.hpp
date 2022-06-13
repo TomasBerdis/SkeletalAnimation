@@ -15,36 +15,36 @@
 #include "Animation/Animation.hpp"
 #include "Animation/Animator.hpp"
 
-void initialize();
-void run();
-void cleanup();
-void processInput();
-void simulate();
-void render();
+static void initialize();
+static void run();
+static void cleanup();
+static void processInput();
+static void simulate();
+static void render();
 static void glDebugOutputCallback(GLenum source, GLenum type, uint32_t id, GLenum severity, GLsizei length,
     const char *message, const void *userParam);
-void initGui();
-void parseFile(std::string path);
+static void initGui();
+static void parseFile(std::string path);
 
-bool quit = false;
-int32_t screenWidth = 1280;
-int32_t screenHeight = 768;
-SDL_GLContext context;
-SDL_Event event;
-SDL_Window* window;
-Camera* camera;
-Model* model;
-Model* groundPlane;
-Animation* animation;
-Animator* animator;
-std::unordered_map<std::string, Model*> models;
-std::unordered_map<std::string, Animation*> animations;
-std::string selectedModelName;
-std::string selectedAnimationName;
+static bool quit = false;
+static int32_t screenWidth = 1280;
+static int32_t screenHeight = 768;
+static SDL_GLContext context;
+static SDL_Event event;
+static SDL_Window* window;
+static Camera* camera;
+static std::shared_ptr<Model> model;
+static std::shared_ptr<Model> groundPlane;
+static std::shared_ptr<Animation> animation;
+static Animator* animator;
+static std::unordered_map<std::string, std::shared_ptr<Model>> models;
+static std::unordered_map<std::string, std::shared_ptr<Animation>> animations;
+static std::string selectedModelName;
+static std::string selectedAnimationName;
 
-float mouseLastX = screenWidth / 2.0f;
-float mouseLastY = screenHeight / 2.0f;
-bool firstMouse = true;
-bool mouseRightButtonDown = false;
-float lastFrameDurationInSec = 0.0f;
-uint32_t __measureStartTime__;
+static float mouseLastX = screenWidth / 2.0f;
+static float mouseLastY = screenHeight / 2.0f;
+static bool firstMouse = true;
+static bool mouseRightButtonDown = false;
+static float lastFrameDurationInSec = 0.0f;
+static uint32_t __measureStartTime__;

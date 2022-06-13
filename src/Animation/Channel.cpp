@@ -22,6 +22,9 @@ Channel::Channel(int32_t nodeId, const tinygltf::Node* const node)
 
 Channel::~Channel()
 {
+	delete keyframePositions;
+	delete keyframeRotations;
+	delete keyframeScales;
 }
 
 void Channel::addChild(Channel* child)

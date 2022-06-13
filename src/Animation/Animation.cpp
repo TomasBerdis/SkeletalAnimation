@@ -45,6 +45,7 @@ Animation::Animation(tinygltf::Model* const file, int32_t animationId)
  
 Animation::~Animation()
 {
+	std::ranges::for_each(channels, [&](Channel* channel) { delete channel; });
 }
 
 void Animation::calculateDuration()

@@ -30,6 +30,11 @@ SkinnedModel::SkinnedModel(tinygltf::Model* const file)
 	// Destructor called outside
 }
 
+SkinnedModel::~SkinnedModel()
+{
+	std::ranges::for_each(meshes, [&](SkinnedMesh* mesh) { delete mesh; });
+}
+
 void SkinnedModel::render()
 {
 	std::ranges::for_each(meshes, [](SkinnedMesh* m) { m->render(); });

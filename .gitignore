@@ -33,3 +33,5 @@
 
 /build
 /installers
+/.vs
+/.vscode

@@ -6,7 +6,7 @@ class SkinnedMesh : Mesh
 {
 public:
 	SkinnedMesh(tinygltf::Primitive* const primitive, tinygltf::Model* const loadedModel, const glm::mat4 globalTransform);
-	~SkinnedMesh();
+	virtual ~SkinnedMesh();
 
 	void render();
 
