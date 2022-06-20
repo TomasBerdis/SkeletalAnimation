@@ -12,7 +12,7 @@ public:
 	Model(const std::string path);
 	Model(tinygltf::Model* const file);
 	Model() {};
-	~Model();
+	virtual ~Model();
 
 	void virtual render();
 	void translate(const glm::vec3 translation);

@@ -11,6 +11,14 @@ Renderer::Renderer()
 
 Renderer::~Renderer()
 {
+	for (auto iter = programMap.begin(); iter != programMap.end(); ++iter)
+	{
+		delete iter->second;
+	}
+	for (auto iter = textureMap.begin(); iter != textureMap.end(); ++iter)
+	{
+		glDeleteTextures(1, &iter->second.id);
+	}
 }
 
 Renderer* Renderer::getInstance()
@@ -155,6 +163,8 @@ void Renderer::loadTexture(const tinygltf::Image* const image)
 	textureMap.insert({ image->name, texture });
 
 	std::cout << "Texture: \'" << image->name << "\' loaded" << '\n';
+
+	stbi_image_free(texture.data);
 }
 
 void Renderer::bindTexture(const std::string name, uint32_t textureUnit)

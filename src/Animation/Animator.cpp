@@ -12,6 +12,8 @@ Animator::Animator(SkinnedModel* const model, Animation* const animation)
 
 Animator::~Animator()
 {
+    model = nullptr;
+    animation = nullptr;
 }
 
 void Animator::setActor(SkinnedModel* const model, Animation* const animation)

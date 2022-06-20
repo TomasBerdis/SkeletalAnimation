@@ -17,6 +17,10 @@ struct Texture
 	GLenum format;
 	GLenum type;
 	void* data;
+
+	~Texture()
+	{
+	}
 };
 
 /* Singleton */

@@ -25,6 +25,7 @@ Model::Model(tinygltf::Model* const file)
 
 Model::~Model()
 {
+	std::ranges::for_each(meshes, [&](Mesh* mesh) { delete mesh; });
 }
 
 void Model::loadTextures()

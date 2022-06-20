@@ -30,7 +30,7 @@ void main()
         normal = vNormal;
 
     //vec3 colorSample = texture(diffuseMap, vTexCoords).xyz;
-    vec3 colorSample = vec3(0.3f, 0.8f, 0.1f);
+    vec3 colorSample = vec3(0.341,0.725,0.831);
 
     // Ambient
     float ambientStrenght = 0.1f;
@@ -51,5 +51,5 @@ void main()
 
     // Phong
     // vec3 result = (ambient + diffuse + specular) * vec3(colorSample);
-    color = vec4(colorSample, 0.25f);
+    color = vec4(colorSample, 0.50f);
 }
